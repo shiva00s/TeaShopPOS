@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16.dp">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16.dp">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="Business Summary"
+                app:titleTextColor="@color/white" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- DATE SELECTOR FOR DAILY CLOSING -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReportDate"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Summary Date: Today"
+            android:layout_marginBottom="16.dp"
+            app:icon="@android:drawable/ic_menu_today" />
+
+        <!-- PROFIT / LOSS SUMMARY -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#E8F5E9"
+            app:cardCornerRadius="12.dp"
+            app:cardElevation="6.dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20.dp">
+                <TextView
+                    android:id="@+id/tvSummaryTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NET DAILY PROFIT"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textColor="#2E7D32"/>
+                <TextView
+                    android:id="@+id/tvFinalProfit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹ 0.00"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:textColor="#1B5E20"/>
+                <TextView
+                    android:id="@+id/tvProfitSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="In (Sales) - Out (All Expenses)"
+                    android:textSize="10sp"
+                    android:textColor="#4CAF50"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- DAILY CLOSING BREAKDOWN (IN vs OUT) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16.dp">
+            
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0.dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4.dp"
+                app:cardCornerRadius="8.dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12.dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TOTAL IN" android:textSize="10sp" android:textColor="#757575"/>
+                    <TextView android:id="@+id/tvTotalCashIn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₹ 0.00" android:textColor="#2E7D32" android:textStyle="bold"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0.dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4.dp"
+                app:cardCornerRadius="8.dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12.dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TOTAL OUT" android:textSize="10sp" android:textColor="#757575"/>
+                    <TextView android:id="@+id/tvTotalCashOut" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₹ 0.00" android:textColor="#C62828" android:textStyle="bold"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- CATEGORY BREAKDOWN -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daily/Monthly Itemized Entries"
+            android:textStyle="bold"
+            android:layout_marginTop="24.dp"
+            android:layout_marginBottom="8.dp"/>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12.dp">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFinanceBreakdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8.dp"/>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

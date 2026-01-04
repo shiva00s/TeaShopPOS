@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16.dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SELECT SERVICE TYPE"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:textColor="#757575"
+        android:layout_marginBottom="16.dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStanding"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0.dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Standing"
+            android:layout_marginEnd="4.dp"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnParcel"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0.dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Parcel"
+            android:layout_marginStart="4.dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OR SELECT TABLE"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:textColor="#757575"
+        android:layout_marginTop="24.dp"
+        android:layout_marginBottom="8.dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTables"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="4"/>
+
+</LinearLayout>
