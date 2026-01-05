@@ -34,6 +34,8 @@ class MainRepository(
         orderDao.completeOrder(order, items, cashbookEntry, stockMovements)
     }
 
+    suspend fun insertOrder(order: Order) = orderDao.insertOrder(order)
+    suspend fun insertOrderItem(item: OrderItem) = orderDao.insertOrderItem(item)
     suspend fun insertCashbookEntry(entry: Cashbook) = orderDao.insertCashbookEntry(entry)
     suspend fun insertStockMovement(movement: StockMovement) = orderDao.insertStockMovement(movement)
 

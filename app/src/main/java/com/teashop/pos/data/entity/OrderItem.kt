@@ -8,9 +8,10 @@ data class OrderItem(
     @PrimaryKey val orderItemId: String,
     val orderId: String,
     val itemId: String,
-    val itemName: String, // Snapshotted name at time of sale
+    val itemName: String,
     val quantity: Double,
     val unitPrice: Double,
+    val parcelCharge: Double = 0.0, // Added for your requirement
     val subTotal: Double,
     val createdAt: Long = System.currentTimeMillis()
 )

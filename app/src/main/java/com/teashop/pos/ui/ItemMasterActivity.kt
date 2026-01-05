@@ -1,18 +1,13 @@
 package com.teashop.pos.ui
 
 import android.os.Bundle
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.teashop.pos.TeaShopApplication
-import com.teashop.pos.data.entity.Item
 import com.teashop.pos.databinding.ActivityItemMasterBinding
 import com.teashop.pos.ui.adapter.ItemMasterAdapter
 import com.teashop.pos.ui.viewmodel.ItemMasterViewModel
@@ -30,11 +25,8 @@ class ItemMasterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val app = application as TeaShopApplication
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ItemMasterViewModel(app.repository) as T
-            }
-        })[ItemMasterViewModel::class.java]
+        val factory = app.viewModelFactory
+        viewModel = ViewModelProvider(this, factory)[ItemMasterViewModel::class.java]
 
         setupUI()
         observeViewModel()
@@ -42,13 +34,15 @@ class ItemMasterActivity : AppCompatActivity() {
 
     private fun setupUI() {
         adapter = ItemMasterAdapter { item ->
-            showSetPriceDialog(item)
+            val shopId = intent.getStringExtra("SHOP_ID") ?: return@ItemMasterAdapter
+            SetPriceDialogFragment.newInstance(item.itemId, item.name, shopId)
+                .show(supportFragmentManager, SetPriceDialogFragment.TAG)
         }
         binding.rvItems.layoutManager = LinearLayoutManager(this)
         binding.rvItems.adapter = adapter
 
-        binding.fabAddItem.setOnClickListener {
-            showAddItemDialog()
+        binding.fabAddItem.setOnClickListener { 
+            AddItemDialogFragment.newInstance().show(supportFragmentManager, AddItemDialogFragment.TAG)
         }
     }
 
@@ -60,35 +54,5 @@ class ItemMasterActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun showAddItemDialog() {
-        val nameInput = EditText(this).apply { hint = "Item Name" }
-        AlertDialog.Builder(this)
-            .setTitle("Add Global Item")
-            .setView(nameInput)
-            .setPositiveButton("Add") { _, _ ->
-                val name = nameInput.text.toString()
-                if (name.isNotEmpty()) {
-                    viewModel.addItem(name, "General")
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
-    private fun showSetPriceDialog(item: Item) {
-        val shopId = intent.getStringExtra("SHOP_ID") ?: return
-        val priceInput = EditText(this).apply { hint = "Selling Price" }
-        AlertDialog.Builder(this)
-            .setTitle("Set Price for ${item.name}")
-            .setView(priceInput)
-            .setPositiveButton("Save") { _, _ ->
-                val price = priceInput.text.toString().toDoubleOrNull() ?: 0.0
-                viewModel.setPriceForShop(item.itemId, shopId, price)
-                Toast.makeText(this, "Price Updated", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
     }
 }

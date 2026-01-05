@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8.dp"
@@ -15,8 +16,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="0.dp"
@@ -28,16 +29,16 @@
                     android:id="@+id/tvStaffName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Staff Name"
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:text="Shiva" />
 
                 <TextView
                     android:id="@+id/tvStaffRole"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cashier • ₹500/Shift"
-                    android:textColor="#757575" />
+                    android:textColor="#757575"
+                    tools:text="PER_HOUR - ₹60.00" />
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
@@ -45,22 +46,103 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CHECK IN" />
+                android:text="ATTENDANCE" />
+        </LinearLayout>
+
+        <!-- REAL-TIME STATS SECTION -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12.dp"
+            android:background="#F9F9F9"
+            android:orientation="horizontal"
+            android:padding="8.dp">
+
+            <LinearLayout
+                android:layout_width="0.dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="THIS MONTH"
+                    android:textSize="10sp"
+                    android:textColor="#757575"/>
+                <TextView
+                    android:id="@+id/tvTotalHours"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.0 hrs"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0.dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PENDING ADV"
+                    android:textSize="10sp"
+                    android:textColor="#C62828"/>
+                <TextView
+                    android:id="@+id/tvPendingAdvance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹ 0.00"
+                    android:textColor="#C62828"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0.dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.2"
+                android:orientation="vertical"
+                android:gravity="end">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CURRENT PAYABLE"
+                    android:textSize="10sp"
+                    android:textColor="#2E7D32"/>
+                <TextView
+                    android:id="@+id/tvCurrentSalary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹ 0.00"
+                    android:textColor="#2E7D32"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginTop="8.dp"
-            android:gravity="end">
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewRecords"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="VIEW LOGS"
+                android:textSize="12sp"
+                android:textColor="#1A237E" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAdvance"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="GIVE ADVANCE"
+                android:text="ADVANCE"
+                android:textSize="12sp"
                 android:textColor="#E65100" />
 
             <com.google.android.material.button.MaterialButton
@@ -69,6 +151,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PAY SALARY"
+                android:textSize="12sp"
                 android:textColor="#2E7D32" />
 
         </LinearLayout>

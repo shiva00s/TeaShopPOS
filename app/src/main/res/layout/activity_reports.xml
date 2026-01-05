@@ -34,6 +34,36 @@
             android:layout_marginBottom="16.dp"
             app:icon="@android:drawable/ic_menu_today" />
 
+        <!-- SMART STOCK REMINDERS -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardLowStock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16.dp"
+            app:cardBackgroundColor="#FFF3E0"
+            app:cardCornerRadius="12.dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16.dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="STOCK NEEDED FOR TOMORROW 🥛"
+                    android:textColor="#E65100"
+                    android:textStyle="bold"
+                    android:textSize="12sp"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvLowStock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8.dp"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- PROFIT / LOSS SUMMARY -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -72,13 +102,12 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- DAILY CLOSING BREAKDOWN (IN vs OUT) -->
+        <!-- DAILY CLOSING BREAKDOWN -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="16.dp">
-            
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0.dp"
                 android:layout_height="wrap_content"
@@ -94,7 +123,6 @@
                     <TextView android:id="@+id/tvTotalCashIn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₹ 0.00" android:textColor="#2E7D32" android:textStyle="bold"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0.dp"
                 android:layout_height="wrap_content"
@@ -116,7 +144,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Daily/Monthly Itemized Entries"
+            android:text="Daily Itemized Entries"
             android:textStyle="bold"
             android:layout_marginTop="24.dp"
             android:layout_marginBottom="8.dp"/>

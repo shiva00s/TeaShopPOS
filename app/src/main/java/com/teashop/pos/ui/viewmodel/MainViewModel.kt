@@ -3,7 +3,6 @@ package com.teashop.pos.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teashop.pos.data.MainRepository
-import com.teashop.pos.data.dao.ReportDao
 import com.teashop.pos.data.entity.Shop
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -12,8 +11,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class MainViewModel(
-    private val repository: MainRepository,
-    private val reportDao: ReportDao
+    private val repository: MainRepository
 ) : ViewModel() {
 
     private val startOfDay: Long
@@ -27,7 +25,7 @@ class MainViewModel(
     val allShops: StateFlow<List<Shop>> = repository.getAllShops()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val globalTodaySales: StateFlow<Double?> = reportDao.getGlobalTodaySales(startOfDay)
+    val globalTodaySales: StateFlow<Double?> = repository.reportDao.getGlobalTodaySales(startOfDay)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
 
     fun addShop(shop: Shop) {

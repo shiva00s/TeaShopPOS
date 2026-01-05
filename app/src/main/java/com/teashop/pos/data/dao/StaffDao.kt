@@ -13,7 +13,7 @@ interface StaffDao {
     @Query("SELECT * FROM employees WHERE shopId = :shopId AND isActive = 1")
     fun getShopEmployees(shopId: String): Flow<List<Employee>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAttendance(attendance: Attendance)
 
     @Update
@@ -21,6 +21,9 @@ interface StaffDao {
 
     @Query("SELECT * FROM attendance WHERE employeeId = :employeeId ORDER BY checkInTime DESC LIMIT 1")
     suspend fun getLastAttendance(employeeId: String): Attendance?
+
+    @Query("SELECT * FROM attendance WHERE employeeId = :employeeId AND checkInTime >= :start AND checkInTime <= :end ORDER BY checkInTime DESC")
+    fun getAttendanceFlow(employeeId: String, start: Long, end: Long): Flow<List<Attendance>>
 
     @Query("SELECT * FROM attendance WHERE employeeId = :employeeId AND checkInTime >= :start AND checkInTime <= :end")
     suspend fun getAttendanceForPeriod(employeeId: String, start: Long, end: Long): List<Attendance>
@@ -48,4 +51,7 @@ interface StaffDao {
             markAdvanceRecovered(payment.employeeId, payment.paymentId)
         }
     }
+
+    @Query("SELECT SUM(hoursWorked) FROM attendance WHERE employeeId = :employeeId AND checkInTime >= :start AND checkInTime <= :end")
+    fun getTotalHoursFlow(employeeId: String, start: Long, end: Long): Flow<Double?>
 }

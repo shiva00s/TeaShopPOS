@@ -16,12 +16,14 @@ class ItemMasterViewModel(private val repository: MainRepository) : ViewModel() 
     val allItems: StateFlow<List<Item>> = repository.getActiveItems()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun addItem(name: String, category: String) {
+    fun addItemWithParcel(name: String, category: String, hasParcel: Boolean, parcelAmt: Double) {
         viewModelScope.launch {
             val item = Item(
                 itemId = UUID.randomUUID().toString(),
                 name = name,
-                category = category
+                category = category,
+                hasParcelCharge = hasParcel,
+                defaultParcelCharge = parcelAmt
             )
             repository.insertItem(item)
         }

@@ -21,9 +21,10 @@ import com.teashop.pos.data.entity.*
         AdvancePayment::class,
         Supplier::class,
         Purchase::class,
-        Reminder::class
+        Reminder::class,
+        StockPattern::class
     ],
-    version = 7, // Bumped for Strict Attendance & OT schema
+    version = 10, // Incremented after fixing StockPattern schema
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

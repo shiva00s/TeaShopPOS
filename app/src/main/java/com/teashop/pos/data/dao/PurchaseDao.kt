@@ -21,27 +21,33 @@ interface PurchaseDao {
     @Insert
     suspend fun insertCashbookEntry(entry: Cashbook)
 
-    /**
-     * Records a purchase and its initial payment.
-     */
     @Transaction
     suspend fun recordPurchase(purchase: Purchase, cashbookEntry: Cashbook?) {
         insertPurchase(purchase)
         cashbookEntry?.let { insertCashbookEntry(it) }
     }
 
-    /**
-     * Reminder Logic: Get all purchases with outstanding balances.
-     */
     @Query("SELECT * FROM purchases WHERE shopId = :shopId AND balanceAmount > 0")
     fun getPendingPayments(shopId: String): Flow<List<Purchase>>
 
-    @Query("UPDATE purchases SET paidAmount = paidAmount + :amount, balanceAmount = balanceAmount - :amount, isSettled = (balanceAmount - :amount <= 0) WHERE purchaseId = :purchaseId")
-    suspend fun payBalance(purchaseId: String, amount: Double)
+    // Corrected payBalance to be a safe, multi-step transaction
+    @Transaction
+    suspend fun payBalance(purchaseId: String, amount: Double) {
+        // Step 1: Update the amounts
+        updatePurchasePayment(purchaseId, amount)
+        // Step 2: Mark as settled if balance is now <= 0
+        markPurchaseSettled(purchaseId)
+    }
+
+    @Query("UPDATE purchases SET paidAmount = paidAmount + :amount, balanceAmount = balanceAmount - :amount WHERE purchaseId = :purchaseId")
+    suspend fun updatePurchasePayment(purchaseId: String, amount: Double)
+
+    @Query("UPDATE purchases SET isSettled = 1 WHERE purchaseId = :purchaseId AND balanceAmount <= 0")
+    suspend fun markPurchaseSettled(purchaseId: String)
 
     @Transaction
     suspend fun settleBalance(purchaseId: String, amount: Double, cashbookEntry: Cashbook) {
-        payBalance(purchaseId, amount)
+        payBalance(purchaseId, amount) // This now calls the safe transactional method
         insertCashbookEntry(cashbookEntry)
     }
 }

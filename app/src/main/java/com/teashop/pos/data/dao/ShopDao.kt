@@ -14,9 +14,6 @@ interface ShopDao {
     @Query("SELECT * FROM shops")
     fun getAllShops(): Flow<List<Shop>>
 
-    @Query("SELECT * FROM shops WHERE shopId = :shopId")
-    suspend fun getShopById(shopId: String): Shop?
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItem(item: Item)
 
@@ -27,15 +24,17 @@ interface ShopDao {
     suspend fun updateShopItemPrice(price: ShopItemPrice)
 
     @Query("""
-        SELECT i.*, sip.sellingPrice 
+        SELECT 
+            i.itemId, i.name, i.category, i.isActive, i.hasParcelCharge, i.defaultParcelCharge, i.globalPrice, i.createdAt, 
+            COALESCE(sip.sellingPrice, i.globalPrice) as finalPrice
         FROM items i 
-        JOIN shop_item_prices sip ON i.itemId = sip.itemId 
-        WHERE sip.shopId = :shopId AND i.isActive = 1
+        LEFT JOIN shop_item_prices sip ON i.itemId = sip.itemId AND sip.shopId = :shopId
+        WHERE i.isActive = 1
     """)
     fun getShopMenu(shopId: String): Flow<List<ShopMenuItem>>
 }
 
 data class ShopMenuItem(
     @Embedded val item: Item,
-    val sellingPrice: Double
+    val finalPrice: Double
 )

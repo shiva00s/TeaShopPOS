@@ -3,143 +3,181 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="?attr/colorSurfaceContainerLowest">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16.dp">
+        android:orientation="vertical">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16.dp">
+            android:layout_height="wrap_content">
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="Cash &amp; Stock"
-                app:titleTextColor="@color/white" />
+                app:title="Cash &amp; Stock Entry"
+                app:titleTextColor="?attr/colorOnPrimary" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Date Picker Section -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPickDate"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select Date: Today"
-            android:layout_marginBottom="16.dp"
-            app:icon="@android:drawable/ic_menu_my_calendar" />
+            android:orientation="vertical"
+            android:padding="16.dp">
 
-        <!-- Finance Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12.dp"
-            app:cardElevation="4.dp">
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPickDate"
+                style="@style/Widget.Material3.Button.OutlinedButton.Icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16.dp">
-                
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="FINANCE (RENT/PURCHASE/EXPENSE)"
-                    android:textStyle="bold"
-                    android:textSize="12sp"
-                    android:textColor="#757575"/>
+                android:text="Select Date: Today"
+                android:layout_marginBottom="16.dp"
+                app:icon="@drawable/ic_calendar" />
 
-                <Spinner
-                    android:id="@+id/spinnerCategory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8.dp"/>
-                
-                <EditText
-                    android:id="@+id/etAmount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Amount (₹)"
-                    android:inputType="numberDecimal"
-                    android:layout_marginTop="8.dp"/>
-
-                <EditText
-                    android:id="@+id/etDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Notes (Supplier Name / Detail)"
-                    android:layout_marginTop="8.dp"/>
-
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="16.dp">
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnCashIn"
-                        android:layout_width="0.dp"
+                    android:orientation="vertical"
+                    android:padding="16.dp">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="IN (CASH)"
-                        android:layout_marginEnd="4.dp"
-                        android:backgroundTint="#2E7D32"/>
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnCashOut"
-                        android:layout_width="0.dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="OUT (PAY)"
-                        android:layout_marginStart="4.dp"
-                        android:backgroundTint="#C62828"/>
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                        android:text="FINANCE (RENT/PURCHASE/EXPENSE)"
+                        android:textAppearance="?attr/textAppearanceLabelSmall"/>
 
-        <!-- Stock Maintenance Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16.dp"
-            app:cardCornerRadius="12.dp">
-            <LinearLayout
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tilCategory"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Category">
+                            <AutoCompleteTextView
+                                android:id="@+id/actCategory"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tilDescription"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Notes (Supplier Name / Detail)"
+                            android:layout_marginStart="8dp">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etDescription"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+                    
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilAmount"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Amount (₹)"
+                        android:layout_marginTop="8dp">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="16.dp">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnCashIn"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="IN (CASH)"
+                            android:layout_marginEnd="4dp"
+                            app:backgroundTint="?attr/colorTertiary"/>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnCashOut"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="OUT (PAY)"
+                            android:layout_marginStart="4dp"
+                            app:backgroundTint="?attr/colorError"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16.dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="STOCK MAINTENANCE (PURCHASE/WASTAGE)"
-                    android:textStyle="bold"
-                    android:textSize="12sp"
-                    android:textColor="#757575"/>
-
-                <Spinner
-                    android:id="@+id/spinnerItems"
+                android:layout_marginTop="16.dp">
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8.dp"/>
+                    android:orientation="vertical"
+                    android:padding="16.dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="STOCK MAINTENANCE (PURCHASE/WASTAGE)"
+                        android:textAppearance="?attr/textAppearanceLabelSmall"/>
 
-                <EditText
-                    android:id="@+id/etQty"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Quantity (+ for Purchase, - for Waste)"
-                    android:inputType="numberDecimal"
-                    android:layout_marginTop="8.dp"/>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilItems"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="Select Item">
+                        <AutoCompleteTextView
+                            android:id="@+id/actItems"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnUpdateStock"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12.dp"
-                    android:text="UPDATE STOCK LEVELS"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilQty"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Quantity (+ for Purchase, - for Waste)"
+                        android:layout_marginTop="8dp">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etQty"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberSigned|numberDecimal" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnUpdateStock"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12.dp"
+                        android:text="UPDATE STOCK LEVELS"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

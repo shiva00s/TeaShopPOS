@@ -2,13 +2,10 @@ package com.teashop.pos.ui
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -33,26 +30,25 @@ class FinanceEntryActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val app = application as TeaShopApplication
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return FinanceEntryViewModel(app.repository) as T
-            }
-        })[FinanceEntryViewModel::class.java]
+        val factory = app.viewModelFactory
+        viewModel = ViewModelProvider(this, factory)[FinanceEntryViewModel::class.java]
 
-        val shopId = intent.getStringExtra("SHOP_ID") ?: return finish()
-        binding.toolbar.title = "Manual Entry: Cash & Stock"
-        setSupportActionBar(binding.toolbar)
+        val shopId = intent.getStringExtra("SHOP_ID")
+        if (shopId.isNullOrEmpty()) {
+            Toast.makeText(this, "Shop ID missing", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
-        setupUI(shopId)
         observeViewModel()
+        setupUI(shopId)
     }
 
     private fun setupUI(shopId: String) {
-        // Updated Category Spinner to handle Daily Sales specifically
         val categories = arrayOf("DAILY SALES (CASH)", "DAILY SALES (QR)", "OPENING CASH", "PURCHASE", "SALARY", "ADVANCE", "EB/GAS", "RENT", "MAINTENANCE", "OTHER")
-        binding.spinnerCategory.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
+        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categories)
+        binding.actCategory.setAdapter(categoryAdapter)
 
-        // Date Picker for past date entries (like 01-01-2026)
         binding.btnPickDate.setOnClickListener {
             DatePickerDialog(this, { _, year, month, day ->
                 selectedDate.set(year, month, day)
@@ -62,23 +58,26 @@ class FinanceEntryActivity : AppCompatActivity() {
         }
 
         binding.btnCashIn.setOnClickListener { 
-            val category = binding.spinnerCategory.selectedItem.toString()
+            val category = binding.actCategory.text.toString()
             recordFinance(shopId, "IN", category) 
         }
         
         binding.btnCashOut.setOnClickListener { 
-            val category = binding.spinnerCategory.selectedItem.toString()
+            val category = binding.actCategory.text.toString()
             recordFinance(shopId, "OUT", category) 
         }
 
         binding.btnUpdateStock.setOnClickListener {
             val qty = binding.etQty.text.toString().toDoubleOrNull() ?: 0.0
-            val selectedItemIndex = binding.spinnerItems.selectedItemPosition
-            if (qty != 0.0 && selectedItemIndex >= 0) {
-                val item = itemList[selectedItemIndex]
-                viewModel.updateStock(shopId, item.itemId, qty, "ADJUSTMENT", selectedDate.timeInMillis)
-                Toast.makeText(this, "Stock Recorded for ${item.name}", Toast.LENGTH_SHORT).show()
-                binding.etQty.text.clear()
+            val selectedItemName = binding.actItems.text.toString()
+            val selectedItem = itemList.find { it.name == selectedItemName }
+
+            if (qty != 0.0 && selectedItem != null) {
+                viewModel.updateStock(shopId, selectedItem.itemId, qty, "ADJUSTMENT", selectedDate.timeInMillis)
+                Toast.makeText(this, "Stock Recorded for ${selectedItem.name}", Toast.LENGTH_SHORT).show()
+                binding.etQty.text?.clear()
+            } else {
+                Toast.makeText(this, "Please select a valid item", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -86,13 +85,22 @@ class FinanceEntryActivity : AppCompatActivity() {
     private fun recordFinance(shopId: String, type: String, category: String) {
         val amount = binding.etAmount.text.toString().toDoubleOrNull() ?: 0.0
         val desc = binding.etDescription.text.toString()
-        if (amount > 0) {
+
+        if (category == "OTHER" && desc.isBlank()) {
+            binding.tilDescription.error = "Description is required for OTHER"
+            return
+        } else {
+            binding.tilDescription.error = null
+        }
+
+        if (amount > 0 && category.isNotEmpty()) {
             viewModel.addFinancialEntry(shopId, amount, type, category, desc, selectedDate.timeInMillis)
             Toast.makeText(this, "$category Recorded: ₹$amount", Toast.LENGTH_SHORT).show()
-            binding.etAmount.text.clear()
-            binding.etDescription.text.clear()
+            binding.etAmount.text?.clear()
+            binding.etDescription.text?.clear()
+            binding.actCategory.text.clear()
         } else {
-            Toast.makeText(this, "Please enter valid amount", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Please enter a valid amount and category", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -101,9 +109,9 @@ class FinanceEntryActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.allItems.collect { items ->
                     itemList = items
-                    val adapter = ArrayAdapter(this@FinanceEntryActivity, android.R.layout.simple_spinner_item, items.map { it.name })
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    binding.spinnerItems.adapter = adapter
+                    val itemNames = items.map { it.name }
+                    val itemAdapter = ArrayAdapter(this@FinanceEntryActivity, android.R.layout.simple_dropdown_item_1line, itemNames)
+                    binding.actItems.setAdapter(itemAdapter)
                 }
             }
         }

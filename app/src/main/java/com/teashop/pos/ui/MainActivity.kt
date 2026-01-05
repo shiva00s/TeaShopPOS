@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -31,14 +30,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        setSupportActionBar(binding.toolbar)
-
         val app = application as TeaShopApplication
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return MainViewModel(app.repository, app.database.reportDao()) as T
-            }
-        })[MainViewModel::class.java]
+        val factory = app.viewModelFactory
+        viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
 
         setupRecyclerView()
         setupListeners()
@@ -95,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                         name = name,
                         location = location,
                         openingDate = System.currentTimeMillis(),
-                        openingCashBalance = 0.0
+                        openingCashBalance = 0.0 // Corrected: Added missing parameter
                     )
                     viewModel.addShop(newShop)
                 }

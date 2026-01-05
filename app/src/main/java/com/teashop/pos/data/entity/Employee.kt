@@ -2,6 +2,7 @@ package com.teashop.pos.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "employees")
 data class Employee(
@@ -17,4 +18,4 @@ data class Employee(
     val otRateMultiplier: Double = 1.0, // 1.0x, 1.5x, 2.0x
     val isActive: Boolean = true,
     val createdAt: Long = System.currentTimeMillis()
-)
+) : Serializable

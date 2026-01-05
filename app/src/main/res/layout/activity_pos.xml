@@ -4,15 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EEEEEE">
+    android:background="#F5F5F5">
 
-    <!-- Top Bar: Shop Name & Status -->
+    <!-- Top Bar -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent">
-
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -22,16 +21,16 @@
             app:titleTextColor="@color/white" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Left Side: Menu Selection -->
+    <!-- Left side: Menu -->
     <LinearLayout
         android:id="@+id/menuContainer"
         android:layout_width="0.dp"
         android:layout_height="0.dp"
         android:orientation="vertical"
-        android:padding="8.dp"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cartContainer"
-        app:layout_constraintHorizontal_weight="1.5"
+        app:layout_constraintHorizontal_weight="2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appBar">
 
@@ -42,71 +41,86 @@
             tools:listitem="@layout/item_menu_grid" />
     </LinearLayout>
 
-    <!-- Right Side: Cart & Checkout -->
-    <LinearLayout
+    <!-- Right side: Cart - Given more space (2:1 ratio) -->
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cartContainer"
         android:layout_width="0.dp"
         android:layout_height="0.dp"
-        android:background="@color/white"
-        android:elevation="4.dp"
-        android:orientation="vertical"
-        android:padding="8.dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@id/menuContainer"
         app:layout_constraintTop_toBottomOf="@id/appBar">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Current Order"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:layout_marginBottom="8.dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvCart"
-            android:layout_width="match_parent"
-            android:layout_height="0.dp"
-            android:layout_weight="1"
-            tools:listitem="@layout/item_cart_row" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#DDDDDD"
-            android:layout_marginVertical="8.dp"/>
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
             <TextView
-                android:layout_width="0.dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Total"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:id="@+id/tvTotalAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="₹ 0.00"
+                android:text="Current Order"
+                android:textStyle="bold"
                 android:textSize="18sp"
-                android:textColor="#D32F2F"
-                android:textStyle="bold"/>
-        </LinearLayout>
+                android:layout_marginBottom="16dp"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCheckout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12.dp"
-            android:text="PAY AND PRINT"
-            android:padding="12.dp"
-            app:cornerRadius="4.dp" />
-    </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCart"
+                android:layout_width="match_parent"
+                android:layout_height="0.dp"
+                android:layout_weight="1"
+                tools:listitem="@layout/item_cart_row" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginVertical="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="0.dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Total"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/tvTotalAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹ 0.00"
+                    android:textSize="22sp"
+                    android:textColor="?attr/colorPrimary"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCheckout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16.dp"
+                android:text="PAY AND PRINT"
+                android:padding="16dp"
+                app:cornerRadius="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnClearCart"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Clear Cart"
+                android:textColor="@color/red" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

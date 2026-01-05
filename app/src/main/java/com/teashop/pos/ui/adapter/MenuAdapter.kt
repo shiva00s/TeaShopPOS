@@ -32,7 +32,7 @@ class MenuAdapter(private val onItemClick: (ShopMenuItem) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(menuItem: ShopMenuItem) {
             binding.tvItemName.text = menuItem.item.name
-            binding.tvItemPrice.text = String.format("₹ %.2f", menuItem.sellingPrice)
+            binding.tvItemPrice.text = String.format("₹ %.2f", menuItem.finalPrice)
             binding.root.setOnClickListener { onItemClick(menuItem) }
         }
     }

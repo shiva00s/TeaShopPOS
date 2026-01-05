@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">TeaShopPOS</string>
+    <string name="total_duration">Total: %d hrs %d mins</string>
+    <string name="invalid_time_range">Invalid Time Range</string>
+    <string name="in_time">IN: %02d:%02d</string>
+    <string name="out_time">OUT: %02d:%02d</string>
+    <string name="attendance_log_label">%s to %s</string>
+    <string name="attendance_log_value">%sh (%s)</string>
 </resources>

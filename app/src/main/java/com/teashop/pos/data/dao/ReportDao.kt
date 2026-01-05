@@ -1,8 +1,7 @@
 package com.teashop.pos.data.dao
 
-import androidx.room.Dao
-import androidx.room.Query
-import com.teashop.pos.data.entity.Reminder
+import androidx.room.*
+import com.teashop.pos.data.entity.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,51 +17,50 @@ interface ReportDao {
     fun getCashFlowSummary(shopId: String, startTime: Long, endTime: Long): Flow<CashFlowSummary?>
 
     @Query("""
-        SELECT category, SUM(amount) as totalAmount, transactionType
-        FROM cashbook
-        WHERE shopId = :shopId AND transactionDate >= :startTime AND transactionDate <= :endTime
-        GROUP BY category, transactionType
-    """)
-    fun getShopFinancialBreakdown(shopId: String, startTime: Long, endTime: Long): Flow<List<FinancialCategorySummary>>
-
-    @Query("SELECT * FROM reminders WHERE shopId = :shopId AND isActive = 1")
-    fun getActiveReminders(shopId: String): Flow<List<Reminder>>
-
-    @Query("""
-        SELECT i.name as itemName, SUM(sm.quantity) as currentStock
-        FROM items i
-        LEFT JOIN stock_movements sm ON i.itemId = sm.itemId
-        WHERE sm.shopId = :shopId OR sm.shopId IS NULL
-        GROUP BY i.itemId
-        HAVING currentStock < 10
-    """)
-    fun getLowStockAlerts(shopId: String): Flow<List<StockStatus>>
-
-    @Query("""
-        SELECT i.name as itemName, SUM(sm.quantity) as currentStock
+        SELECT i.name as itemName, 
+               SUM(sm.quantity) as currentStock,
+               sp.weekdayStandard,
+               sp.weekendStandard,
+               sup.name as supplierName,
+               sup.contact as supplierContact
         FROM items i
         JOIN stock_movements sm ON i.itemId = sm.itemId
+        JOIN stock_patterns sp ON i.itemId = sp.itemId AND sp.shopId = :shopId
+        LEFT JOIN suppliers sup ON sp.supplierId = sup.supplierId
         WHERE sm.shopId = :shopId
         GROUP BY i.itemId
     """)
-    fun getShopStockStatus(shopId: String): Flow<List<StockStatus>>
+    fun getSmartStockReminders(shopId: String): Flow<List<SmartStockReminder>>
 
-    @Query("SELECT SUM(payableAmount) FROM orders WHERE status = 'CLOSED' AND createdAt >= :startOfDay")
+    @Query("""
+        SELECT category, description, SUM(amount) as totalAmount, transactionType
+        FROM cashbook
+        WHERE shopId = :shopId AND transactionDate >= :startTime AND transactionDate <= :endTime
+        GROUP BY category, description, transactionType
+    """)
+    fun getShopFinancialBreakdown(shopId: String, startTime: Long, endTime: Long): Flow<List<FinancialCategorySummary>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateStockPattern(pattern: StockPattern)
+
+    @Query("""
+        SELECT 
+            SUM(CASE WHEN transactionType = 'IN' THEN amount ELSE 0 END) - 
+            SUM(CASE WHEN transactionType = 'OUT' THEN amount ELSE 0 END)
+        FROM cashbook 
+        WHERE transactionDate >= :startOfDay
+    """)
     fun getGlobalTodaySales(startOfDay: Long): Flow<Double?>
 }
 
-data class CashFlowSummary(
-    val totalIn: Double,
-    val totalOut: Double
-)
-
-data class FinancialCategorySummary(
-    val category: String,
-    val totalAmount: Double,
-    val transactionType: String
-)
-
-data class StockStatus(
+data class SmartStockReminder(
     val itemName: String,
-    val currentStock: Double
+    val currentStock: Double,
+    val weekdayStandard: Double,
+    val weekendStandard: Double,
+    val supplierName: String?,
+    val supplierContact: String?
 )
+
+data class CashFlowSummary(val totalIn: Double, val totalOut: Double)
+data class FinancialCategorySummary(val category: String, val description: String?, val totalAmount: Double, val transactionType: String)

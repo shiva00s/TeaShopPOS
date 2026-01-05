@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -51,6 +52,10 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
 
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
     // Retrofit & Networking
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
@@ -60,10 +65,17 @@ dependencies {
     val workVersion = "2.9.1"
     implementation("androidx.work:work-runtime-ktx:$workVersion")
 
-    // Lifecycle
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    // Lifecycle & ViewModel
+    val lifecycleVersion = "2.8.7"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
+
+    // Fragment & Activity
+    val activityVersion = "1.9.0"
+    val fragmentVersion = "1.8.0"
+    implementation("androidx.activity:activity-ktx:$activityVersion")
+    implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

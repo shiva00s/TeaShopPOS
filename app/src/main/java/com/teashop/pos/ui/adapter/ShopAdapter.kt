@@ -17,8 +17,7 @@ class ShopAdapter(private val onShopClick: (Shop) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: ShopViewHolder, position: Int) {
-        val shop = getItem(position)
-        holder.bind(shop)
+        holder.bind(getItem(position))
     }
 
     inner class ShopViewHolder(private val binding: ItemShopCardBinding) :
@@ -27,10 +26,8 @@ class ShopAdapter(private val onShopClick: (Shop) -> Unit) :
         fun bind(shop: Shop) {
             binding.tvShopName.text = shop.name
             binding.tvLocation.text = shop.location
+            binding.tvShopTodaySales.text = "OPEN POS" // Standard clear action
             binding.root.setOnClickListener { onShopClick(shop) }
-            
-            // Note: Today's sales would usually come from a combined query or separate observe
-            binding.tvShopTodaySales.text = "View POS" 
         }
     }
 

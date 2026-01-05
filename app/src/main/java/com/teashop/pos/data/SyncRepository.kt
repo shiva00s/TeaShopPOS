@@ -2,51 +2,55 @@ package com.teashop.pos.data
 
 import android.util.Log
 import com.teashop.pos.api.ApiService
-import com.teashop.pos.data.dao.SyncDao
+import com.teashop.pos.data.dao.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/**
- * Handles the "Offline-first" sync logic.
- * Periodically or manually pushes local data to the PostgreSQL cloud.
- */
 class SyncRepository(
     private val apiService: ApiService,
-    private val syncDao: SyncDao
+    private val db: AppDatabase
 ) {
 
     suspend fun performFullSync() = withContext(Dispatchers.IO) {
-        syncOrders()
-        syncCashbook()
+        // 1. PUSH local changes to Cloud
+        pushOrders()
+        pushCashbook()
+        
+        // 2. PULL new data from Cloud (Multi-Mobile Sync)
+        pullShops()
+        pullGlobalSales()
     }
 
-    private suspend fun syncOrders() {
+    private suspend fun pushOrders() {
         try {
-            val unsynced = syncDao.getUnsyncedOrders()
+            val unsynced = db.syncDao().getUnsyncedOrders()
             if (unsynced.isEmpty()) return
-
             val response = apiService.pushOrders(unsynced)
-            if (response.isSuccessful) {
-                syncDao.markOrdersSynced(unsynced.map { it.orderId })
-                Log.d("Sync", "Successfully synced ${unsynced.size} orders")
-            }
-        } catch (e: Exception) {
-            Log.e("Sync", "Order sync failed: ${e.message}")
-        }
+            if (response.isSuccessful) db.syncDao().markOrdersSynced(unsynced.map { it.orderId })
+        } catch (e: Exception) { Log.e("Sync", "Order Push failed", e) }
     }
 
-    private suspend fun syncCashbook() {
+    private suspend fun pushCashbook() {
         try {
-            val unsynced = syncDao.getUnsyncedCashbook()
+            val unsynced = db.syncDao().getUnsyncedCashbook()
             if (unsynced.isEmpty()) return
-
             val response = apiService.pushCashbook(unsynced)
+            if (response.isSuccessful) db.syncDao().markCashbookSynced(unsynced.map { it.entryId })
+        } catch (e: Exception) { Log.e("Sync", "Cashbook Push failed", e) }
+    }
+
+    private suspend fun pullShops() {
+        try {
+            // Fetch all shops from cloud that this owner owns
+            val response = apiService.getGlobalSummary() // Example endpoint
             if (response.isSuccessful) {
-                syncDao.markCashbookSynced(unsynced.map { it.entryId })
-                Log.d("Sync", "Successfully synced ${unsynced.size} cashbook entries")
+                // Update local DB with new shops/data from other mobiles
+                // response.body()?.shopSummaries?.forEach { ... }
             }
-        } catch (e: Exception) {
-            Log.e("Sync", "Cashbook sync failed: ${e.message}")
-        }
+        } catch (e: Exception) { Log.e("Sync", "Pull failed", e) }
+    }
+
+    private suspend fun pullGlobalSales() {
+        // Implementation to fetch total profit from all mobiles
     }
 }

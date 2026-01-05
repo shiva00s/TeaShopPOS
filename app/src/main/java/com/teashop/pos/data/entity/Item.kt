@@ -7,7 +7,10 @@ import androidx.room.PrimaryKey
 data class Item(
     @PrimaryKey val itemId: String,
     val name: String,
-    val category: String, // Tea, Coffee, Snack, etc.
+    val category: String,
     val isActive: Boolean = true,
+    val hasParcelCharge: Boolean = false,
+    val defaultParcelCharge: Double = 5.0,
+    val globalPrice: Double = 0.0, // Added: Set once, used by all shops by default
     val createdAt: Long = System.currentTimeMillis()
 )

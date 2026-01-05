@@ -1,66 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingTop="8.dp"
-    android:paddingBottom="8.dp"
-    android:gravity="center_vertical">
+    android:padding="8dp">
 
-    <LinearLayout
-        android:layout_width="0.dp"
+    <TextView
+        android:id="@+id/tvCartItemName"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/tvCartItemName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ginger Tea"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-        <TextView
-            android:id="@+id/tvCartSubtotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="₹ 20.00"
-            android:textColor="#2E7D32"
-            android:textSize="12sp" />
-    </LinearLayout>
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/quantityLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Very Long Item Name That Will Surely Wrap" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvCartSubtotal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCartItemName"
+        tools:text="₹ 240.00" />
+
+    <TextView
+        android:id="@+id/tvParcelCharge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingHorizontal="6dp"
+        android:paddingVertical="2dp"
+        android:textColor="?attr/colorSecondary"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCartSubtotal"
+        app:layout_constraintStart_toEndOf="@+id/tvCartSubtotal"
+        app:layout_constraintTop_toTopOf="@+id/tvCartSubtotal"
+        tools:text="Add Parcel" />
+
+    <LinearLayout
+        android:id="@+id/quantityLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
             android:id="@+id/btnMinus"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@android:drawable/ic_menu_revert"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="#C62828"
-            app:tint="#C62828" />
+            android:src="@drawable/ic_remove" />
 
         <TextView
             android:id="@+id/tvCartQty"
-            android:layout_width="40dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1"
-            android:textAlignment="center"
+            android:paddingHorizontal="4dp"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="10" />
 
         <ImageButton
             android:id="@+id/btnPlus"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@android:drawable/ic_input_add"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="#2E7D32"
-            app:tint="#2E7D32" />
+            android:src="@drawable/ic_add" />
 
     </LinearLayout>
-</LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCartSubtotal" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
