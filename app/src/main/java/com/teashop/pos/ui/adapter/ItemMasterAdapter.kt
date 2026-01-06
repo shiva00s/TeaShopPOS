@@ -8,7 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.teashop.pos.data.entity.Item
 import com.teashop.pos.databinding.ItemMasterRowBinding
 
-class ItemMasterAdapter(private val onSetPriceClick: (Item) -> Unit) :
+class ItemMasterAdapter(
+    private val onSetPriceClick: (Item) -> Unit,
+    private val onEditClick: (Item) -> Unit,
+    private val onDeleteClick: (Item) -> Unit
+) :
     ListAdapter<Item, ItemMasterAdapter.ItemViewHolder>(ItemDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -26,6 +30,8 @@ class ItemMasterAdapter(private val onSetPriceClick: (Item) -> Unit) :
             binding.tvItemName.text = item.name
             binding.tvCategory.text = "Category: ${item.category}"
             binding.btnSetPrice.setOnClickListener { onSetPriceClick(item) }
+            binding.btnEdit.setOnClickListener { onEditClick(item) }
+            binding.btnDelete.setOnClickListener { onDeleteClick(item) }
         }
     }
 

@@ -39,6 +39,15 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    // Suppress kapt warnings for unrecognized options
+    kapt {
+        correctErrorTypes = true
+        arguments {
+            arg("dagger.fastInit", "enabled")
+            arg("dagger.hilt.android.internal.disableAndroidSuperclassValidation", "true")
+        }
+    }
 }
 
 dependencies {
@@ -77,7 +86,16 @@ dependencies {
     implementation("androidx.activity:activity-ktx:$activityVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
 
+    // ML Kit Text Recognition
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    
+    // Hilt Testing (Add these to fix the processor warning in test builds)
+    testImplementation("com.google.dagger:hilt-android-testing:2.50")
+    kaptTest("com.google.dagger:hilt-android-compiler:2.50")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.50")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.50")
 }

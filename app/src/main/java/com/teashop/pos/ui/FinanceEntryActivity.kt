@@ -23,6 +23,7 @@ class FinanceEntryActivity : AppCompatActivity() {
     private lateinit var viewModel: FinanceEntryViewModel
     private var itemList: List<Item> = emptyList()
     private var selectedDate: Calendar = Calendar.getInstance()
+    private var entryId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +35,8 @@ class FinanceEntryActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, factory)[FinanceEntryViewModel::class.java]
 
         val shopId = intent.getStringExtra("SHOP_ID")
+        entryId = intent.getStringExtra("ENTRY_ID")
+
         if (shopId.isNullOrEmpty()) {
             Toast.makeText(this, "Shop ID missing", Toast.LENGTH_SHORT).show()
             finish()
@@ -42,6 +45,10 @@ class FinanceEntryActivity : AppCompatActivity() {
 
         observeViewModel()
         setupUI(shopId)
+
+        if (entryId != null) {
+            viewModel.loadEntry(entryId!!)
+        }
     }
 
     private fun setupUI(shopId: String) {
@@ -94,11 +101,19 @@ class FinanceEntryActivity : AppCompatActivity() {
         }
 
         if (amount > 0 && category.isNotEmpty()) {
-            viewModel.addFinancialEntry(shopId, amount, type, category, desc, selectedDate.timeInMillis)
-            Toast.makeText(this, "$category Recorded: ₹$amount", Toast.LENGTH_SHORT).show()
+            if (entryId == null) {
+                viewModel.addFinancialEntry(shopId, amount, type, category, desc, selectedDate.timeInMillis)
+                Toast.makeText(this, "$category Recorded: ₹$amount", Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.selectedEntry.value?.let {
+                    viewModel.updateFinancialEntry(it, amount, type, category, desc, selectedDate.timeInMillis)
+                    Toast.makeText(this, "$category Updated: ₹$amount", Toast.LENGTH_SHORT).show()
+                }
+            }
             binding.etAmount.text?.clear()
             binding.etDescription.text?.clear()
             binding.actCategory.text.clear()
+            // Removed finish() to allow staying on the same page
         } else {
             Toast.makeText(this, "Please enter a valid amount and category", Toast.LENGTH_SHORT).show()
         }
@@ -112,6 +127,21 @@ class FinanceEntryActivity : AppCompatActivity() {
                     val itemNames = items.map { it.name }
                     val itemAdapter = ArrayAdapter(this@FinanceEntryActivity, android.R.layout.simple_dropdown_item_1line, itemNames)
                     binding.actItems.setAdapter(itemAdapter)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedEntry.collect { entry ->
+                    if (entry != null) {
+                        binding.actCategory.setText(entry.category, false)
+                        binding.etDescription.setText(entry.description)
+                        binding.etAmount.setText(entry.amount.toString())
+                        selectedDate.timeInMillis = entry.transactionDate
+                        val format = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                        binding.btnPickDate.text = "Transaction Date: ${format.format(selectedDate.time)}"
+                    }
                 }
             }
         }

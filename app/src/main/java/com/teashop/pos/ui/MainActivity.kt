@@ -16,6 +16,7 @@ import com.teashop.pos.databinding.ActivityMainBinding
 import com.teashop.pos.databinding.DialogAddShopBinding
 import com.teashop.pos.ui.adapter.ShopAdapter
 import com.teashop.pos.ui.viewmodel.MainViewModel
+import com.teashop.pos.utils.Toaster
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -41,7 +42,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = ShopAdapter { shop ->
-            val intent = Intent(this, POSActivity::class.java).apply {
+            // Navigate to ShopMenuActivity instead of direct POS
+            val intent = Intent(this, ShopMenuActivity::class.java).apply {
                 putExtra("SHOP_ID", shop.shopId)
                 putExtra("SHOP_NAME", shop.name)
             }
@@ -78,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         val dialogBinding = DialogAddShopBinding.inflate(LayoutInflater.from(this))
         
         AlertDialog.Builder(this)
-            .setTitle("Add New Shop")
+            .setTitle("✨ Add New Shop")
             .setView(dialogBinding.root)
             .setPositiveButton("Create") { _, _ ->
                 val name = dialogBinding.etShopName.text.toString()
@@ -89,9 +91,12 @@ class MainActivity : AppCompatActivity() {
                         name = name,
                         location = location,
                         openingDate = System.currentTimeMillis(),
-                        openingCashBalance = 0.0 // Corrected: Added missing parameter
+                        openingCashBalance = 0.0
                     )
                     viewModel.addShop(newShop)
+                    Toaster.show(this, "Shop Added Successfully! 🎉")
+                } else {
+                    Toaster.show(this, "Shop name is required ⚠️", true)
                 }
             }
             .setNegativeButton("Cancel", null)

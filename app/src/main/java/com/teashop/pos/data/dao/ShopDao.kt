@@ -17,6 +17,15 @@ interface ShopDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItem(item: Item)
 
+    @Update
+    suspend fun updateItem(item: Item)
+
+    @Delete
+    suspend fun deleteItem(item: Item)
+
+    @Query("SELECT * FROM items WHERE itemId = :itemId")
+    suspend fun getItem(itemId: String): Item?
+
     @Query("SELECT * FROM items WHERE isActive = 1")
     fun getActiveItems(): Flow<List<Item>>
 

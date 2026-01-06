@@ -14,6 +14,8 @@ class StaffAdapter(
     private val onAdvanceClick: (Employee) -> Unit,
     private val onSalaryClick: (Employee) -> Unit,
     private val onViewLogsClick: (Employee) -> Unit,
+    private val onEditClick: (Employee) -> Unit,
+    private val onDeleteClick: (Employee) -> Unit,
     private var statsMap: Map<String, EmployeeStats> = emptyMap()
 ) : ListAdapter<Employee, StaffAdapter.StaffViewHolder>(EmployeeDiffCallback()) {
 
@@ -47,6 +49,8 @@ class StaffAdapter(
             binding.btnAdvance.setOnClickListener { onAdvanceClick(employee) }
             binding.btnPaySalary.setOnClickListener { onSalaryClick(employee) }
             binding.btnViewRecords.setOnClickListener { onViewLogsClick(employee) }
+            binding.btnEdit.setOnClickListener { onEditClick(employee) }
+            binding.btnDelete.setOnClickListener { onDeleteClick(employee) }
         }
     }
 

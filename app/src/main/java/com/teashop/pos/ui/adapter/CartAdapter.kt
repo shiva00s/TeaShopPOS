@@ -1,5 +1,6 @@
 package com.teashop.pos.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,10 +28,16 @@ class CartAdapter(
     inner class CartViewHolder(private val binding: ItemCartRowBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(cartItem: CartItem) {
-            binding.tvCartItemName.text = cartItem.item.name
+            // 🔥 BULLETPROOF: Always shows name
+            val itemName = when {
+                cartItem.item.name.isNullOrBlank() -> "Item"
+                else -> cartItem.item.name
+            }
+
+            binding.tvCartItemName.text = itemName
             binding.tvCartQty.text = cartItem.quantity.toInt().toString()
             binding.tvCartSubtotal.text = String.format("₹ %.2f", (cartItem.price * cartItem.quantity) + cartItem.parcelCharge)
-            
+
             if (cartItem.parcelCharge > 0) {
                 binding.tvParcelCharge.text = "+ ₹%.2f (Parcel)".format(cartItem.parcelCharge)
             } else {
@@ -48,6 +55,6 @@ class CartItemDiffCallback : DiffUtil.ItemCallback<CartItem>() {
     override fun areItemsTheSame(oldItem: CartItem, newItem: CartItem):
             Boolean = oldItem.item.itemId == newItem.item.itemId
 
-    override fun areContentsTheSame(oldItem: CartItem, newItem: CartItem): 
+    override fun areContentsTheSame(oldItem: CartItem, newItem: CartItem):
             Boolean = oldItem == newItem
 }

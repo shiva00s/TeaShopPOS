@@ -1,6 +1,7 @@
 package com.teashop.pos.ui
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.teashop.pos.TeaShopApplication
 import com.teashop.pos.data.dao.FinancialCategorySummary
 import com.teashop.pos.data.dao.SmartStockReminder
+import com.teashop.pos.data.entity.Cashbook
 import com.teashop.pos.databinding.ActivityReportsBinding
+import com.teashop.pos.databinding.ItemCashbookRowBinding
 import com.teashop.pos.databinding.ItemFinanceRowBinding
 import com.teashop.pos.ui.viewmodel.ReportsViewModel
 import kotlinx.coroutines.launch
@@ -106,23 +109,36 @@ class ReportsActivity : AppCompatActivity() {
                     }
                 }
                 launch {
-                    viewModel.financeBreakdown.collect { binding.rvFinanceBreakdown.adapter = FinanceAdapter(it) }
+                    viewModel.cashbookEntries.collect { 
+                        binding.rvFinanceBreakdown.adapter = CashbookAdapter(it,
+                            onDelete = { entry -> viewModel.deleteCashbookEntry(entry) },
+                            onEdit = { entry -> 
+                                val intent = Intent(this@ReportsActivity, FinanceEntryActivity::class.java)
+                                intent.putExtra("ENTRY_ID", entry.entryId)
+                                startActivity(intent)
+                            })
+                    }
                 }
             }
         }
     }
 
-    class FinanceAdapter(private val items: List<FinancialCategorySummary>) :
-        RecyclerView.Adapter<FinanceAdapter.ViewHolder>() {
-        class ViewHolder(val binding: ItemFinanceRowBinding) : RecyclerView.ViewHolder(binding.root)
+    class CashbookAdapter(
+        private val items: List<Cashbook>,
+        private val onDelete: (Cashbook) -> Unit,
+        private val onEdit: (Cashbook) -> Unit
+    ) : RecyclerView.Adapter<CashbookAdapter.ViewHolder>() {
+        class ViewHolder(val binding: ItemCashbookRowBinding) : RecyclerView.ViewHolder(binding.root)
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(ItemFinanceRowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+            ViewHolder(ItemCashbookRowBinding.inflate(LayoutInflater.from(parent.context), parent, false))
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = items[position]
             val label = if (item.description.isNullOrBlank()) item.category else "${item.category} ${item.description}"
             holder.binding.tvLabel.text = label
-            holder.binding.tvValue.text = String.format("₹ %.2f", item.totalAmount)
+            holder.binding.tvValue.text = String.format("₹ %.2f", item.amount)
             holder.binding.tvValue.setTextColor(if (item.transactionType == "IN") 0xFF2E7D32.toInt() else 0xFFC62828.toInt())
+            holder.binding.btnDelete.setOnClickListener { onDelete(item) }
+            holder.binding.btnEdit.setOnClickListener { onEdit(item) }
         }
         override fun getItemCount() = items.size
     }

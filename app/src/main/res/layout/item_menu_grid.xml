@@ -24,16 +24,16 @@
             android:textStyle="bold"
             android:maxLines="2"
             android:minLines="2"
-            android:ellipsize="none"
-            android:textColor="#212121" />
+            android:ellipsize="end"
+            android:textColor="?android:attr/textColorPrimary" />
 
         <TextView
             android:id="@+id/tvItemPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2.dp"
+            android:layout_marginTop="4.dp"
             android:text="₹ 20.00"
-            android:textColor="#2E7D32"
+            android:textColor="?attr/colorPrimary"
             android:textSize="12sp"
             android:textStyle="bold" />
     </LinearLayout>

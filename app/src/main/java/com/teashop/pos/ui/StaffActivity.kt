@@ -52,6 +52,12 @@ class StaffActivity : AppCompatActivity() {
             onViewLogsClick = { employee -> 
                 AttendanceLogsDialogFragment.newInstance(employee.employeeId, employee.name)
                     .show(supportFragmentManager, AttendanceLogsDialogFragment.TAG)
+            },
+            onEditClick = { employee ->
+                AddStaffDialogFragment.newInstance(employee.employeeId).show(supportFragmentManager, AddStaffDialogFragment.TAG)
+            },
+            onDeleteClick = { employee ->
+                viewModel.deleteEmployee(employee)
             }
         )
         binding.rvStaff.layoutManager = LinearLayoutManager(this)

@@ -6,21 +6,22 @@
     android:layout_height="wrap_content"
     android:padding="8dp">
 
+    <!-- Item Name now takes full width on top -->
     <TextView
         android:id="@+id/tvCartItemName"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:maxLines="2"
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/quantityLayout"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Very Long Item Name That Will Surely Wrap" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Ginger Tea" />
 
+    <!-- Subtotal Below Name -->
     <TextView
         android:id="@+id/tvCartSubtotal"
         android:layout_width="wrap_content"
@@ -33,46 +34,47 @@
         app:layout_constraintTop_toBottomOf="@+id/tvCartItemName"
         tools:text="₹ 240.00" />
 
+    <!-- Parcel Charge Below Subtotal -->
     <TextView
         android:id="@+id/tvParcelCharge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:paddingHorizontal="6dp"
-        android:paddingVertical="2dp"
-        android:textColor="?attr/colorSecondary"
+        android:padding="2dp"
+        android:textColor="#FFC107"
         android:textSize="12sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/tvCartSubtotal"
-        app:layout_constraintStart_toEndOf="@+id/tvCartSubtotal"
-        app:layout_constraintTop_toTopOf="@+id/tvCartSubtotal"
-        tools:text="Add Parcel" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCartSubtotal"
+        tools:text="+ ₹ 2.00 (Parcel)" />
 
+    <!-- Quantity Controls to the Right of Subtotal/Parcel -->
     <LinearLayout
         android:id="@+id/quantityLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvCartItemName">
 
         <ImageButton
             android:id="@+id/btnMinus"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_remove" />
+            android:src="@drawable/ic_remove"
+            app:tint="?attr/colorError" />
 
         <TextView
             android:id="@+id/tvCartQty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="4dp"
+            android:paddingHorizontal="8dp"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -80,10 +82,11 @@
 
         <ImageButton
             android:id="@+id/btnPlus"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_add" />
+            android:src="@drawable/ic_add"
+            app:tint="?attr/colorSecondary" />
 
     </LinearLayout>
 
@@ -95,6 +98,6 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCartSubtotal" />
+        app:layout_constraintTop_toBottomOf="@+id/tvParcelCharge" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,11 +19,29 @@ interface OrderDao {
     @Query("SELECT * FROM orders WHERE orderId = :orderId")
     suspend fun getOrderWithItems(orderId: String): OrderWithItems?
 
+    @Query("SELECT * FROM cashbook WHERE shopId = :shopId AND transactionDate >= :startTime AND transactionDate <= :endTime")
+    fun getCashbookEntriesForPeriod(shopId: String, startTime: Long, endTime: Long): Flow<List<Cashbook>>
+
+    @Query("SELECT * FROM cashbook WHERE entryId = :entryId")
+    suspend fun getCashbookEntry(entryId: String): Cashbook?
+
+    @Update
+    suspend fun updateCashbookEntry(entry: Cashbook)
+
     @Query("SELECT * FROM orders WHERE shopId = :shopId AND status = 'OPEN'")
     fun getOpenOrders(shopId: String): Flow<List<Order>>
 
+    @Query("SELECT * FROM orders WHERE shopId = :shopId AND status = 'HOLD'")
+    fun getHeldOrders(shopId: String): Flow<List<Order>>
+
+    @Delete
+    suspend fun deleteOrder(order: Order)
+
     @Insert
     suspend fun insertCashbookEntry(entry: Cashbook)
+
+    @Delete
+    suspend fun deleteCashbookEntry(entry: Cashbook)
 
     @Insert
     suspend fun insertStockMovement(movement: StockMovement)

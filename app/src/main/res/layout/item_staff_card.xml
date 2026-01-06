@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8.dp"
+    android:layout_margin="8dp"
     app:cardCornerRadius="12.dp">
 
     <LinearLayout
@@ -126,6 +126,23 @@
             android:layout_marginTop="8.dp"
             android:gravity="end"
             android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEdit"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDelete"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                android:textColor="?attr/colorError"
+                android:textSize="12sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnViewRecords"

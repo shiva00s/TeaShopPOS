@@ -10,6 +10,15 @@ interface StaffDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEmployee(employee: Employee)
 
+    @Update
+    suspend fun updateEmployee(employee: Employee)
+
+    @Delete
+    suspend fun deleteEmployee(employee: Employee)
+
+    @Query("SELECT * FROM employees WHERE employeeId = :employeeId")
+    suspend fun getEmployee(employeeId: String): Employee?
+
     @Query("SELECT * FROM employees WHERE shopId = :shopId AND isActive = 1")
     fun getShopEmployees(shopId: String): Flow<List<Employee>>
 

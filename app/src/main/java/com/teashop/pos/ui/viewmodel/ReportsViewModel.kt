@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teashop.pos.data.MainRepository
 import com.teashop.pos.data.dao.*
+import com.teashop.pos.data.entity.Cashbook
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +22,9 @@ class ReportsViewModel(private val repository: MainRepository) : ViewModel() {
     private val _financeBreakdown = MutableStateFlow<List<FinancialCategorySummary>>(emptyList())
     val financeBreakdown: StateFlow<List<FinancialCategorySummary>> = _financeBreakdown.asStateFlow()
 
+    private val _cashbookEntries = MutableStateFlow<List<Cashbook>>(emptyList())
+    val cashbookEntries: StateFlow<List<Cashbook>> = _cashbookEntries.asStateFlow()
+
     fun loadReportsForPeriod(shopId: String, startTime: Long, endTime: Long) {
         viewModelScope.launch {
             repository.reportDao.getSmartStockReminders(shopId).collect {
@@ -36,6 +40,17 @@ class ReportsViewModel(private val repository: MainRepository) : ViewModel() {
             repository.reportDao.getShopFinancialBreakdown(shopId, startTime, endTime).collect {
                 _financeBreakdown.value = it
             }
+        }
+        viewModelScope.launch {
+            repository.getCashbookEntriesForPeriod(shopId, startTime, endTime).collect {
+                _cashbookEntries.value = it
+            }
+        }
+    }
+
+    fun deleteCashbookEntry(entry: Cashbook) {
+        viewModelScope.launch {
+            repository.deleteCashbookEntry(entry)
         }
     }
 }

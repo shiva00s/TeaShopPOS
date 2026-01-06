@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teashop.pos.data.MainRepository
 import com.teashop.pos.data.entity.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -17,6 +19,15 @@ class FinanceEntryViewModel(private val repository: MainRepository) : ViewModel(
 
     val allSuppliers: StateFlow<List<Supplier>> = repository.getShopSuppliers("")
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _selectedEntry = MutableStateFlow<Cashbook?>(null)
+    val selectedEntry: StateFlow<Cashbook?> = _selectedEntry.asStateFlow()
+
+    fun loadEntry(entryId: String) {
+        viewModelScope.launch {
+            _selectedEntry.value = repository.getCashbookEntry(entryId)
+        }
+    }
 
     fun addSupplier(shopId: String, name: String, contact: String) {
         viewModelScope.launch {
@@ -45,6 +56,26 @@ class FinanceEntryViewModel(private val repository: MainRepository) : ViewModel(
                 transactionDate = transactionDate
             )
             repository.insertCashbookEntry(entry)
+        }
+    }
+
+    fun updateFinancialEntry(
+        entry: Cashbook,
+        amount: Double,
+        type: String,
+        category: String,
+        description: String,
+        transactionDate: Long
+    ) {
+        viewModelScope.launch {
+            val updatedEntry = entry.copy(
+                amount = amount,
+                transactionType = type,
+                category = category,
+                description = description,
+                transactionDate = transactionDate
+            )
+            repository.updateCashbookEntry(updatedEntry)
         }
     }
 

@@ -15,6 +15,15 @@ class StaffViewModel(private val repository: MainRepository) : ViewModel() {
 
     private var shopId: String? = null
 
+    private val _selectedEmployee = MutableStateFlow<Employee?>(null)
+    val selectedEmployee: StateFlow<Employee?> = _selectedEmployee.asStateFlow()
+
+    fun loadEmployee(employeeId: String) {
+        viewModelScope.launch {
+            _selectedEmployee.value = repository.getEmployee(employeeId)
+        }
+    }
+
     // Real-time salary and hours state
     private val _employeeStats = MutableStateFlow<Map<String, EmployeeStats>>(emptyMap())
     val employeeStats = _employeeStats.asStateFlow()
@@ -135,6 +144,27 @@ class StaffViewModel(private val repository: MainRepository) : ViewModel() {
                 otRateMultiplier = otRate
             )
             repository.insertEmployee(newEmployee)
+        }
+    }
+
+    fun updateEmployee(employee: Employee, name: String, phone: String, rate: Double, type: String, shiftStart: String, shiftEnd: String, otRate: Double) {
+        viewModelScope.launch {
+            val updatedEmployee = employee.copy(
+                name = name,
+                phone = phone,
+                salaryRate = rate,
+                salaryType = type,
+                shiftStart = shiftStart,
+                shiftEnd = shiftEnd,
+                otRateMultiplier = otRate
+            )
+            repository.updateEmployee(updatedEmployee)
+        }
+    }
+
+    fun deleteEmployee(employee: Employee) {
+        viewModelScope.launch {
+            repository.deleteEmployee(employee)
         }
     }
 

@@ -1,6 +1,8 @@
 package com.teashop.pos
 
 import android.app.Application
+import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.Room
 import com.teashop.pos.api.ApiService
 import com.teashop.pos.data.AppDatabase
@@ -47,5 +49,12 @@ class TeaShopApplication : Application() {
 
     val syncRepository: SyncRepository by lazy {
         SyncRepository(apiService, database)
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        val sharedPreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+        val themeMode = sharedPreferences.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        AppCompatDelegate.setDefaultNightMode(themeMode)
     }
 }
