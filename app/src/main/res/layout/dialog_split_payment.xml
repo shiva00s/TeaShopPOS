@@ -4,49 +4,126 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="24.dp">
+    android:padding="24dp"
+    android:background="@color/card_bg">
 
     <TextView
-        android:id="@+id/tvTotalDue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Total Due: ₹ 99.00"
+        android:text="Finalize Payment 💳"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
         android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="?attr/colorError"
-        android:layout_marginBottom="16.dp"/>
+        android:layout_marginBottom="16dp"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/colorSurfaceVariant"
+        android:layout_marginBottom="20dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TOTAL AMOUNT DUE"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="@color/text_secondary"
+                android:letterSpacing="0.1"/>
+            <TextView
+                android:id="@+id/tvTotalDue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp"
+                android:text="₹ 0.00"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_marginBottom="8dp">
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_marginBottom="12dp"
+        app:prefixText="₹ ">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etCashAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Cash Amount (₹)"
+            android:hint="Cash Amount 💵"
+            android:textStyle="bold"
+            android:textSize="18sp"
             android:inputType="numberDecimal" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_marginBottom="16dp">
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_marginBottom="16dp"
+        app:prefixText="₹ ">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etQrAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="QR / GPay Amount (₹)"
+            android:hint="QR / Online Pay 📱"
+            android:textStyle="bold"
+            android:textSize="18sp"
             android:inputType="numberDecimal" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/tvRemaining"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Remaining: ₹ 99.00"
-        android:textColor="?android:attr/textColorSecondary"/>
+        android:text="Remaining: ₹ 0.00"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="24dp"
+        android:textStyle="italic"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPayCash"
+            style="@style/PremiumButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="CASH 💵"
+            android:layout_marginEnd="6dp"
+            app:backgroundTint="@color/blue" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPayQR"
+            style="@style/PremiumButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="QR 📱"
+            android:layout_marginHorizontal="3dp"
+            app:backgroundTint="@color/green" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSplit"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="SPLIT 🔗"
+            android:layout_marginStart="6dp"
+            app:cornerRadius="16dp" />
+    </LinearLayout>
 
 </LinearLayout>

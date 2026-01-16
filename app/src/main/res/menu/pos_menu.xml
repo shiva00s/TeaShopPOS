@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/action_staff"
-        android:title="Staff Management" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_items"
-        android:title="Menu &amp; Pricing" />
-    <item
-        android:id="@+id/action_finance"
-        android:title="Cash &amp; Stock Entry" />
-    <item
-        android:id="@+id/action_reports"
-        android:title="Reports" />
-    <item
-        android:id="@+id/action_change_service"
-        android:title="Change Table" />
+        android:title="Menu &amp; Pricing"
+        app:showAsAction="never" />
 </menu>

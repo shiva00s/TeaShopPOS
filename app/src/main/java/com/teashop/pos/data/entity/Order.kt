@@ -1,24 +1,56 @@
 package com.teashop.pos.data.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.annotation.Keep
+import com.google.firebase.database.PropertyName
+import java.util.UUID
 
-@Entity(tableName = "orders")
+@Keep
 data class Order(
-    @PrimaryKey val orderId: String,
-    val shopId: String,
-    val tableId: String? = null,
-    val serviceType: String, // TABLE, STANDING, PARCEL
-    val totalAmount: Double = 0.0,
-    val discount: Double = 0.0,
-    val payableAmount: Double = 0.0,
-    val paymentStatus: String = "PENDING", // PENDING, PAID
-    val paymentMethod: String? = null, // CASH, ONLINE, CREDIT
-    val status: String = "OPEN", // OPEN, CLOSED, CANCELLED
-    val createdAt: Long = System.currentTimeMillis(),
-    val closedAt: Long? = null,
+    @get:PropertyName("orderId") @set:PropertyName("orderId")
+    var orderId: String = UUID.randomUUID().toString(),
     
-    // Sync Metadata
-    val lastModified: Long = System.currentTimeMillis(),
-    val isSynced: Boolean = false
+    @get:PropertyName("shopId") @set:PropertyName("shopId")
+    var shopId: String = "",
+    
+    @get:PropertyName("tableId") @set:PropertyName("tableId")
+    var tableId: String? = null,
+    
+    @get:PropertyName("serviceType") @set:PropertyName("serviceType")
+    var serviceType: String = "STANDING",
+    
+    @get:PropertyName("totalAmount") @set:PropertyName("totalAmount")
+    var totalAmount: Double = 0.0,
+    
+    @get:PropertyName("discount") @set:PropertyName("discount")
+    var discount: Double = 0.0,
+    
+    @get:PropertyName("payableAmount") @set:PropertyName("payableAmount")
+    var payableAmount: Double = 0.0,
+    
+    @get:PropertyName("paymentStatus") @set:PropertyName("paymentStatus")
+    var paymentStatus: String = "PENDING",
+    
+    @get:PropertyName("paymentMethod") @set:PropertyName("paymentMethod")
+    var paymentMethod: String? = null,
+    
+    @get:PropertyName("cashAmount") @set:PropertyName("cashAmount")
+    var cashAmount: Double = 0.0,
+    
+    @get:PropertyName("onlineAmount") @set:PropertyName("onlineAmount")
+    var onlineAmount: Double = 0.0,
+    
+    @get:PropertyName("status") @set:PropertyName("status")
+    var status: String = "OPEN",
+    
+    @get:PropertyName("createdAt") @set:PropertyName("createdAt")
+    var createdAt: Long = System.currentTimeMillis(),
+    
+    @get:PropertyName("closedAt") @set:PropertyName("closedAt")
+    var closedAt: Long? = null,
+    
+    @get:PropertyName("lastModified") @set:PropertyName("lastModified")
+    var lastModified: Long = System.currentTimeMillis(),
+    
+    @get:PropertyName("isSynced") @set:PropertyName("isSynced")
+    var isSynced: Boolean = false
 )

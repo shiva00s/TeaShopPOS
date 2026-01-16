@@ -1,14 +1,19 @@
 package com.teashop.pos.data.entity
 
-import androidx.room.Entity
+import androidx.annotation.Keep
+import com.google.firebase.database.PropertyName
 
-@Entity(
-    tableName = "shop_item_prices",
-    primaryKeys = ["shopId", "itemId"]
-)
+@Keep
 data class ShopItemPrice(
-    val shopId: String,
-    val itemId: String,
-    val sellingPrice: Double,
-    val updatedAt: Long = System.currentTimeMillis()
+    @get:PropertyName("shopId") @set:PropertyName("shopId")
+    var shopId: String = "",
+    
+    @get:PropertyName("itemId") @set:PropertyName("itemId")
+    var itemId: String = "",
+    
+    @get:PropertyName("sellingPrice") @set:PropertyName("sellingPrice")
+    var sellingPrice: Double = 0.0,
+    
+    @get:PropertyName("updatedAt") @set:PropertyName("updatedAt")
+    var updatedAt: Long = System.currentTimeMillis()
 )

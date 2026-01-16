@@ -1,5 +1,6 @@
 package com.teashop.pos.ui
 
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.os.Bundle
@@ -8,11 +9,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
-import com.teashop.pos.R
-import com.teashop.pos.TeaShopApplication
+import com.teashop.pos.data.entity.Attendance
 import com.teashop.pos.data.entity.Employee
 import com.teashop.pos.databinding.DialogManualAttendanceBinding
 import com.teashop.pos.ui.viewmodel.StaffViewModel
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ManualAttendanceDialogFragment : DialogFragment() {
@@ -21,14 +22,21 @@ class ManualAttendanceDialogFragment : DialogFragment() {
     private val binding get() = _binding!!
 
     private lateinit var viewModel: StaffViewModel
+    private var selectedDate = Calendar.getInstance()
+    private var inCal: Calendar? = null
+    private var outCal: Calendar? = null
+    private var existingRecord: Attendance? = null
+    private var isEditMode = false
 
     companion object {
         const val TAG = "ManualAttendanceDialog"
         private const val ARG_EMPLOYEE = "employee"
+        private const val ARG_ATTENDANCE = "attendance"
 
-        fun newInstance(employee: Employee): ManualAttendanceDialogFragment {
+        fun newInstance(employee: Employee, attendance: Attendance? = null): ManualAttendanceDialogFragment {
             val args = Bundle().apply {
                 putSerializable(ARG_EMPLOYEE, employee)
+                if (attendance != null) putSerializable(ARG_ATTENDANCE, attendance)
             }
             return ManualAttendanceDialogFragment().apply {
                 arguments = args
@@ -38,63 +46,179 @@ class ManualAttendanceDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val app = requireActivity().application as TeaShopApplication
-        val factory = app.viewModelFactory
-        viewModel = ViewModelProvider(requireActivity(), factory)[StaffViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[StaffViewModel::class.java]
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogManualAttendanceBinding.inflate(LayoutInflater.from(context))
         @Suppress("DEPRECATION")
         val employee = requireArguments().getSerializable(ARG_EMPLOYEE) as Employee
+        @Suppress("DEPRECATION")
+        val attendanceToEdit = requireArguments().getSerializable(ARG_ATTENDANCE) as? Attendance
 
-        val inCal = Calendar.getInstance()
-        val outCal = Calendar.getInstance()
-
-        fun updateDurationText() {
-            val diff = outCal.timeInMillis - inCal.timeInMillis
-            if (diff > 0) {
-                val hours = diff / (1000 * 60 * 60)
-                val mins = (diff / (1000 * 60)) % 60
-                binding.tvDuration.text = getString(R.string.total_duration, hours, mins)
-            } else {
-                binding.tvDuration.text = getString(R.string.invalid_time_range)
-            }
+        if (attendanceToEdit != null) {
+            isEditMode = true
+            existingRecord = attendanceToEdit
+            selectedDate.timeInMillis = attendanceToEdit.checkInTime
         }
 
-        binding.btnInTime.setOnClickListener {
-            TimePickerDialog(requireContext(), { _, h, m ->
-                inCal.set(Calendar.HOUR_OF_DAY, h); inCal.set(Calendar.MINUTE, m); inCal.set(Calendar.SECOND, 0)
-                binding.btnInTime.text = getString(R.string.in_time, h, m)
-                updateDurationText()
-            }, 10, 0, false).show()
-        }
+        setupListeners()
+        updateUIForRecord()
 
-        binding.btnOutTime.setOnClickListener {
-            TimePickerDialog(requireContext(), { _, h, m ->
-                outCal.set(Calendar.HOUR_OF_DAY, h); outCal.set(Calendar.MINUTE, m); outCal.set(Calendar.SECOND, 0)
-                binding.btnOutTime.text = getString(R.string.out_time, h, m)
-                updateDurationText()
-            }, 22, 0, false).show()
-        }
-
-        return AlertDialog.Builder(requireActivity())
-            .setTitle("Manual Time Entry: ${employee.name}")
+        val builder = AlertDialog.Builder(requireActivity())
+            .setTitle(if (isEditMode) "Edit Attendance Entry" else "Attendance: ${employee.name}")
             .setView(binding.root)
-            .setPositiveButton("Save Entry") { _, _ ->
-                if (outCal.timeInMillis > inCal.timeInMillis) {
-                    viewModel.addManualAttendance(
-                        employee,
-                        inCal.timeInMillis,
-                        outCal.timeInMillis,
-                        binding.rbGap.isChecked
-                    )
-                } else {
-                    Toast.makeText(context, "Error: Out time must be after In time", Toast.LENGTH_SHORT).show()
-                }
+            .setPositiveButton("Save") { _, _ ->
+                saveEntry(employee)
             }
             .setNegativeButton("Cancel", null)
-            .create()
+
+        if (isEditMode) {
+            builder.setNeutralButton("Delete") { _, _ ->
+                existingRecord?.let {
+                    viewModel.deleteAttendance(it)
+                    Toast.makeText(context, "Entry Deleted", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        return builder.create()
+    }
+
+    private fun setupListeners() {
+        binding.btnDate.setOnClickListener {
+            DatePickerDialog(requireContext(), { _, y, m, d ->
+                selectedDate.set(y, m, d)
+                updateDateButton()
+            }, selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH), selectedDate.get(Calendar.DAY_OF_MONTH)).show()
+        }
+
+        binding.btnPrevDate.setOnClickListener {
+            selectedDate.add(Calendar.DAY_OF_MONTH, -1)
+            updateDateButton()
+        }
+
+        binding.btnNextDate.setOnClickListener {
+            selectedDate.add(Calendar.DAY_OF_MONTH, 1)
+            updateDateButton()
+        }
+
+        binding.btnInTime.setOnClickListener { showInTimePicker() }
+
+        binding.btnOutTime.setOnClickListener {
+            if (inCal == null) {
+                Toast.makeText(context, "Set IN time first", Toast.LENGTH_SHORT).show()
+            } else {
+                showOutTimePicker()
+            }
+        }
+    }
+
+    private fun updateDateButton() {
+        val df = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        binding.btnDate.text = df.format(selectedDate.time)
+    }
+
+    private fun updateUIForRecord() {
+        val tf = SimpleDateFormat("HH:mm", Locale.getDefault())
+        updateDateButton()
+        
+        if (existingRecord != null) {
+            inCal = Calendar.getInstance().apply { timeInMillis = existingRecord!!.checkInTime }
+            binding.btnInTime.text = "IN: ${tf.format(inCal!!.time)}"
+            
+            if (existingRecord!!.type == "GAP") binding.rbGap.isChecked = true
+            else binding.rbWork.isChecked = true
+            
+            if (existingRecord!!.checkOutTime != null && existingRecord!!.checkOutTime!! > 0) {
+                outCal = Calendar.getInstance().apply { timeInMillis = existingRecord!!.checkOutTime!! }
+                binding.btnOutTime.text = "OUT: ${tf.format(outCal!!.time)}"
+            } else {
+                outCal = null
+                binding.btnOutTime.text = "Select OUT Time"
+            }
+            
+            // Always enable editing in edit mode
+            binding.btnDate.isEnabled = true
+            binding.btnInTime.isEnabled = true
+            binding.btnOutTime.isEnabled = true
+            binding.rbWork.isEnabled = true
+            binding.rbGap.isEnabled = true
+
+        } else {
+            // New entry logic
+            binding.btnInTime.isEnabled = true
+            binding.btnOutTime.isEnabled = true
+            binding.btnDate.isEnabled = true
+            binding.rbWork.isEnabled = true
+            binding.rbGap.isEnabled = true
+        }
+        updateDurationText()
+    }
+
+    private fun showInTimePicker() {
+        TimePickerDialog(requireContext(), { _, h, m ->
+            inCal = (selectedDate.clone() as Calendar).apply {
+                set(Calendar.HOUR_OF_DAY, h); set(Calendar.MINUTE, m); set(Calendar.SECOND, 0)
+            }
+            binding.btnInTime.text = "IN: %02d:%02d".format(h, m)
+            updateDurationText()
+        }, inCal?.get(Calendar.HOUR_OF_DAY) ?: 10, inCal?.get(Calendar.MINUTE) ?: 0, false).show()
+    }
+
+    private fun showOutTimePicker() {
+        TimePickerDialog(requireContext(), { _, h, m ->
+            outCal = (selectedDate.clone() as Calendar).apply {
+                set(Calendar.HOUR_OF_DAY, h); set(Calendar.MINUTE, m); set(Calendar.SECOND, 0)
+            }
+            if (inCal != null && outCal!!.timeInMillis < inCal!!.timeInMillis) {
+                outCal!!.add(Calendar.DATE, 1)
+            }
+            binding.btnOutTime.text = "OUT: %02d:%02d".format(h, m)
+            updateDurationText()
+        }, outCal?.get(Calendar.HOUR_OF_DAY) ?: 17, outCal?.get(Calendar.MINUTE) ?: 30, false).show()
+    }
+
+    private fun updateDurationText() {
+        if (inCal != null) {
+            val endTime = outCal?.timeInMillis ?: System.currentTimeMillis()
+            val diff = endTime - inCal!!.timeInMillis
+            if (diff >= 0) {
+                val hours = diff / (1000 * 60 * 60)
+                val mins = (diff / (1000 * 60)) % 60
+                binding.tvDuration.text = "Total: $hours hrs $mins mins"
+                if (outCal == null) binding.tvDuration.text = binding.tvDuration.text.toString() + " (Running)"
+            } else {
+                binding.tvDuration.text = "Invalid Time Range"
+            }
+        } else {
+            binding.tvDuration.text = "Total: 0 hrs 0 mins"
+        }
+    }
+
+    private fun saveEntry(employee: Employee) {
+        if (inCal == null) {
+            Toast.makeText(context, "IN time is required to save", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        val finalIn = inCal!!.timeInMillis
+        val finalOut = outCal?.timeInMillis ?: 0L
+        val isGap = binding.rbGap.isChecked
+
+        if (isEditMode && existingRecord != null) {
+            val endTime = if (finalOut > 0) finalOut else null
+
+            viewModel.updateAttendance(existingRecord!!.copy(
+                checkInTime = finalIn,
+                checkOutTime = endTime,
+                type = if (isGap) "GAP" else "WORK"
+            ))
+            Toast.makeText(context, "Entry Updated", Toast.LENGTH_SHORT).show()
+        } else {
+            viewModel.addManualAttendanceEntry(employee, finalIn, finalOut, isGap)
+            Toast.makeText(context, "Entry Saved", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDestroyView() {

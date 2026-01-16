@@ -9,10 +9,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.teashop.pos" />
+                  <option name="mobileSdkAppId" value="1:554696480272:android:ffc8fa2a904576396b9c95" />
+                  <option name="projectId" value="teashoppos-3b3bd" />
+                  <option name="projectNumber" value="554696480272" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

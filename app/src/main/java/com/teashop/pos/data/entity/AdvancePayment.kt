@@ -1,15 +1,28 @@
 package com.teashop.pos.data.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.annotation.Keep
+import com.google.firebase.database.PropertyName
 
-@Entity(tableName = "advance_payments")
+@Keep
 data class AdvancePayment(
-    @PrimaryKey val advanceId: String,
-    val employeeId: String,
-    val shopId: String,
-    val amount: Double,
-    val date: Long = System.currentTimeMillis(),
-    val isRecovered: Boolean = false,
-    val recoveryPaymentId: String? = null // Linked to SalaryPayment
+    @get:PropertyName("advanceId") @set:PropertyName("advanceId")
+    var advanceId: String = "",
+    
+    @get:PropertyName("employeeId") @set:PropertyName("employeeId")
+    var employeeId: String = "",
+    
+    @get:PropertyName("shopId") @set:PropertyName("shopId")
+    var shopId: String = "",
+    
+    @get:PropertyName("amount") @set:PropertyName("amount")
+    var amount: Double = 0.0,
+    
+    @get:PropertyName("date") @set:PropertyName("date")
+    var date: Long = System.currentTimeMillis(),
+    
+    @get:PropertyName("isRecovered") @set:PropertyName("isRecovered")
+    var isRecovered: Boolean = false,
+    
+    @get:PropertyName("recoveryPaymentId") @set:PropertyName("recoveryPaymentId")
+    var recoveryPaymentId: String? = null
 )

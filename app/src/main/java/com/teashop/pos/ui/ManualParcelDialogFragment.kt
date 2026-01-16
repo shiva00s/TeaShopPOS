@@ -6,15 +6,14 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.teashop.pos.TeaShopApplication
 import com.teashop.pos.ui.viewmodel.CartItem
 import com.teashop.pos.ui.viewmodel.POSViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ManualParcelDialogFragment : DialogFragment() {
 
-    private val viewModel: POSViewModel by activityViewModels {
-        (requireActivity().application as TeaShopApplication).viewModelFactory
-    }
+    private val viewModel: POSViewModel by activityViewModels()
 
     companion object {
         const val TAG = "ManualParcelDialog"

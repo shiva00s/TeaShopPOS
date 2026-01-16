@@ -3,7 +3,7 @@ package com.teashop.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.teashop.pos.data.dao.ShopMenuItem
+import com.teashop.pos.data.entity.ShopMenuItem
 import com.teashop.pos.databinding.ItemMenuGridBinding
 
 class MenuAdapter(private val onItemClick: (ShopMenuItem) -> Unit) :

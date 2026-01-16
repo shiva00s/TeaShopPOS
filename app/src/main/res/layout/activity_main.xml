@@ -4,17 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="?attr/colorSurface"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:fitsSystemWindows="true"
+        app:elevation="0dp">
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
+            style="@style/Widget.App.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Tea Shop ERP Dashboard"
-            app:titleTextColor="@color/white" />
+            app:title="Tea Shop ERP 🏰"
+            app:titleCentered="true" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -26,41 +31,73 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16.dp">
+            android:padding="16dp">
 
-            <!-- CONSOLIDATED OWNER REPORT -->
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#1A237E"
-                app:cardCornerRadius="12.dp"
-                app:cardElevation="8.dp">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+                
+                <TextView
+                    android:id="@+id/tvGlobalLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Global Insights 🌍"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGlobalFilter"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Today"
+                    android:textSize="10sp"
+                    android:paddingHorizontal="8dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+            </LinearLayout>
+
+            <!-- Premium Gradient Dashboard Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardGlobalInsights"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="12dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/grad_premium_main"
                     android:orientation="vertical"
-                    android:padding="20.dp">
+                    android:padding="24dp">
                     <TextView
+                        android:id="@+id/tvGlobalPeriod"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="CONSOLIDATED TODAY (ALL SHOPS)"
-                        android:textColor="#C5CAE9"
+                        android:text="NET GLOBAL PROFIT (TODAY)"
+                        android:textColor="#E0E7FF"
+                        android:letterSpacing="0.1"
                         android:textStyle="bold"
-                        android:textSize="12sp"/>
+                        android:textSize="11sp"/>
                     <TextView
                         android:id="@+id/tvGlobalTotal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="₹ 0.00"
-                        android:textColor="@color/white"
-                        android:textSize="32sp"
+                        android:textColor="@android:color/white"
+                        android:textSize="36sp"
                         android:textStyle="bold"
-                        android:layout_marginTop="4.dp"/>
+                        android:layout_marginTop="8dp"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Real-time profit across your business"
-                        android:textColor="#9FA8DA"
+                        android:layout_marginTop="4dp"
+                        android:text="Sales - Expenses - Salaries across all branches ✨"
+                        android:textColor="#C7D2FE"
                         android:textSize="10sp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -68,10 +105,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Active Shops"
+                android:text="Your Active Shops 🏬"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                 android:textStyle="bold"
-                android:layout_marginTop="24.dp"
-                android:layout_marginBottom="8.dp"/>
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="12dp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvShops"
@@ -82,11 +120,12 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAddShop"
+                style="@style/PremiumButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16.dp"
-                android:text="Register New Shop"
-                app:cornerRadius="8.dp" />
+                android:layout_marginTop="24dp"
+                android:text="Register New Shop ➕"
+                app:backgroundTint="?attr/colorPrimaryVariant" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

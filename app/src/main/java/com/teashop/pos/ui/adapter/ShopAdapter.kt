@@ -7,9 +7,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.teashop.pos.data.entity.Shop
 import com.teashop.pos.databinding.ItemShopCardBinding
+import com.teashop.pos.ui.viewmodel.ShopWithProfit
 
-class ShopAdapter(private val onShopClick: (Shop) -> Unit) :
-    ListAdapter<Shop, ShopAdapter.ShopViewHolder>(ShopDiffCallback()) {
+class ShopAdapter(
+    private val onShopClick: (Shop) -> Unit,
+    private val onLongClick: (Shop) -> Unit
+) : ListAdapter<ShopWithProfit, ShopAdapter.ShopViewHolder>(ShopDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopViewHolder {
         val binding = ItemShopCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -22,17 +25,22 @@ class ShopAdapter(private val onShopClick: (Shop) -> Unit) :
 
     inner class ShopViewHolder(private val binding: ItemShopCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        
-        fun bind(shop: Shop) {
+
+        fun bind(shopWithProfit: ShopWithProfit) {
+            val shop = shopWithProfit.shop
             binding.tvShopName.text = shop.name
             binding.tvLocation.text = shop.location
-            binding.tvShopTodaySales.text = "OPEN POS" // Standard clear action
+            binding.tvShopNetProfit.text = String.format("₹ %.2f", shopWithProfit.profit)
             binding.root.setOnClickListener { onShopClick(shop) }
+            binding.root.setOnLongClickListener {
+                onLongClick(shop)
+                true
+            }
         }
     }
 
-    class ShopDiffCallback : DiffUtil.ItemCallback<Shop>() {
-        override fun areItemsTheSame(oldItem: Shop, newItem: Shop) = oldItem.shopId == newItem.shopId
-        override fun areContentsTheSame(oldItem: Shop, newItem: Shop) = oldItem == newItem
+    class ShopDiffCallback : DiffUtil.ItemCallback<ShopWithProfit>() {
+        override fun areItemsTheSame(oldItem: ShopWithProfit, newItem: ShopWithProfit) = oldItem.shop.shopId == newItem.shop.shopId
+        override fun areContentsTheSame(oldItem: ShopWithProfit, newItem: ShopWithProfit) = oldItem == newItem
     }
 }

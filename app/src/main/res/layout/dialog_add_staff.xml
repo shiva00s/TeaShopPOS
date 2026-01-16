@@ -32,6 +32,36 @@
             android:inputType="phone" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Salary Type"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"/>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleSalaryType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:singleSelection="true"
+        app:checkedButton="@+id/btnHourly">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHourly"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Per Hour" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMonthly"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Per Month" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
@@ -41,13 +71,50 @@
             android:id="@+id/etSalaryRate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Rate (per hour/month)"
+            android:hint="Amount"
             android:inputType="numberDecimal" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etHireDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Hire Date"
+                android:focusable="false"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTerminateDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Terminate Date"
+                android:focusable="false"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -80,6 +147,20 @@
                 android:inputType="time" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etBreakHours"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Break Time (in hours)"
+            android:text="0.0"
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

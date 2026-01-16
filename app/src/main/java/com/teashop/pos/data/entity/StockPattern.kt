@@ -1,15 +1,22 @@
 package com.teashop.pos.data.entity
 
-import androidx.room.Entity
+import androidx.annotation.Keep
+import com.google.firebase.database.PropertyName
 
-@Entity(
-    tableName = "stock_patterns",
-    primaryKeys = ["itemId", "shopId"] // Corrected: Composite Primary Key
-)
+@Keep
 data class StockPattern(
-    val itemId: String,
-    val shopId: String,
-    val weekdayStandard: Double, // e.g. 20.0
-    val weekendStandard: Double, // e.g. 25.0
-    val supplierId: String? = null // Preferred supplier for this item
+    @get:PropertyName("itemId") @set:PropertyName("itemId")
+    var itemId: String = "",
+    
+    @get:PropertyName("shopId") @set:PropertyName("shopId")
+    var shopId: String = "",
+    
+    @get:PropertyName("weekdayStandard") @set:PropertyName("weekdayStandard")
+    var weekdayStandard: Double = 0.0,
+    
+    @get:PropertyName("weekendStandard") @set:PropertyName("weekendStandard")
+    var weekendStandard: Double = 0.0,
+    
+    @get:PropertyName("supplierId") @set:PropertyName("supplierId")
+    var supplierId: String? = null
 )
