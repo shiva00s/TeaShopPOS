@@ -8,6 +8,7 @@ import com.teashop.pos.R
 import com.teashop.pos.databinding.LayoutPremiumToastBinding
 
 object Toaster {
+    @Suppress("DEPRECATION")
     fun show(context: Context, message: String, isError: Boolean = false) {
         val inflater = LayoutInflater.from(context)
         val binding = LayoutPremiumToastBinding.inflate(inflater)

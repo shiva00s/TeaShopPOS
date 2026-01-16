@@ -6,15 +6,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.teashop.pos.TeaShopApplication
 import com.teashop.pos.ui.viewmodel.StaffViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
+@AndroidEntryPoint
 class PaySalaryDialogFragment : DialogFragment() {
 
-    private val viewModel: StaffViewModel by activityViewModels {
-        (requireActivity().application as TeaShopApplication).viewModelFactory
-    }
+    private val viewModel: StaffViewModel by activityViewModels()
 
     companion object {
         const val TAG = "PaySalaryDialog"

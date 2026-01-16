@@ -1,17 +1,34 @@
 package com.teashop.pos.data.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.annotation.Keep
+import com.google.firebase.database.PropertyName
 
-@Entity(tableName = "reminders")
+@Keep
 data class Reminder(
-    @PrimaryKey val reminderId: String,
-    val shopId: String,
-    val title: String, // Rent, EB Bill, Gas, etc.
-    val amount: Double,
-    val dueDay: Int, // 1 for 1st of month, etc.
-    val category: String, // RENT, EB, GAS, etc.
-    val lastPaidMonth: Int? = null, // Month index (0-11)
-    val lastPaidYear: Int? = null,
-    val isActive: Boolean = true
+    @get:PropertyName("reminderId") @set:PropertyName("reminderId")
+    var reminderId: String = "",
+    
+    @get:PropertyName("shopId") @set:PropertyName("shopId")
+    var shopId: String = "",
+    
+    @get:PropertyName("title") @set:PropertyName("title")
+    var title: String = "",
+    
+    @get:PropertyName("amount") @set:PropertyName("amount")
+    var amount: Double = 0.0,
+    
+    @get:PropertyName("dueDay") @set:PropertyName("dueDay")
+    var dueDay: Int = 1,
+    
+    @get:PropertyName("category") @set:PropertyName("category")
+    var category: String = "",
+    
+    @get:PropertyName("lastPaidMonth") @set:PropertyName("lastPaidMonth")
+    var lastPaidMonth: Int? = null,
+    
+    @get:PropertyName("lastPaidYear") @set:PropertyName("lastPaidYear")
+    var lastPaidYear: Int? = null,
+    
+    @get:PropertyName("isActive") @set:PropertyName("isActive")
+    var isActive: Boolean = true
 )

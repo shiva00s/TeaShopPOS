@@ -1,14 +1,13 @@
 package com.teashop.pos.ui.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.teashop.pos.databinding.ItemCartRowBinding
 import com.teashop.pos.ui.viewmodel.CartItem
+import java.util.Locale
 
 class CartAdapter(
     private val onIncrease: (CartItem) -> Unit,
@@ -28,25 +27,21 @@ class CartAdapter(
     inner class CartViewHolder(private val binding: ItemCartRowBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(cartItem: CartItem) {
-            // 🔥 BULLETPROOF: Always shows name
-            val itemName = when {
-                cartItem.item.name.isNullOrBlank() -> "Item"
-                else -> cartItem.item.name
-            }
+            val itemName = cartItem.item.name.ifBlank { "Item" }
 
             binding.tvCartItemName.text = itemName
-            binding.tvCartQty.text = cartItem.quantity.toInt().toString()
-            binding.tvCartSubtotal.text = String.format("₹ %.2f", (cartItem.price * cartItem.quantity) + cartItem.parcelCharge)
+            binding.tvCartQty.text = String.format(Locale.getDefault(), "%d", cartItem.quantity.toInt())
+            binding.tvCartSubtotal.text = String.format(Locale.getDefault(), "₹ %.2f", (cartItem.price * cartItem.quantity) + cartItem.parcelCharge)
 
             if (cartItem.parcelCharge > 0) {
-                binding.tvParcelCharge.text = "+ ₹%.2f (Parcel)".format(cartItem.parcelCharge)
+                binding.tvParcelLink.text = "+ ₹%.2f (Parcel 📦)".format(cartItem.parcelCharge)
             } else {
-                binding.tvParcelCharge.text = "Add Parcel"
+                binding.tvParcelLink.text = "Add Parcel 📦"
             }
 
             binding.btnPlus.setOnClickListener { onIncrease(cartItem) }
             binding.btnMinus.setOnClickListener { onDecrease(cartItem) }
-            binding.tvParcelCharge.setOnClickListener { onParcelClick(cartItem) }
+            binding.tvParcelLink.setOnClickListener { onParcelClick(cartItem) }
         }
     }
 }

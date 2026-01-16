@@ -2,40 +2,48 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/PremiumCardView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8.dp"
-    app:cardCornerRadius="8.dp"
-    app:cardElevation="2.dp">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16.dp"
+        android:padding="20dp"
         android:gravity="center_vertical">
 
+        <TextView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_circle_small"
+            android:backgroundTint="@color/colorSurfaceVariant"
+            android:gravity="center"
+            android:text="🏪"
+            android:textSize="24sp" />
+
         <LinearLayout
-            android:layout_width="0.dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="16dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvShopName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Main Branch"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textStyle="bold"
+                tools:text="Main Branch" />
 
             <TextView
                 android:id="@+id/tvLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Anna Nagar"
-                android:textColor="#757575"
-                android:textSize="12sp" />
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:textColor="@color/text_secondary"
+                tools:text="📍 Anna Nagar" />
         </LinearLayout>
 
         <LinearLayout
@@ -45,19 +53,20 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvShopTodaySales"
+                android:id="@+id/tvShopNetProfit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="₹ 0.00"
-                android:textColor="#2E7D32"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/green"
+                android:textStyle="bold"
+                tools:text="₹ 4,500.00" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Today"
-                android:textSize="10sp"
-                android:textColor="#757575" />
+                android:text="Net Profit"
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                android:textColor="@color/text_secondary" />
         </LinearLayout>
 
     </LinearLayout>

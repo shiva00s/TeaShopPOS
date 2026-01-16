@@ -1,14 +1,25 @@
 package com.teashop.pos.data.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.annotation.Keep
+import com.google.firebase.database.PropertyName
 
-@Entity(tableName = "suppliers")
+@Keep
 data class Supplier(
-    @PrimaryKey val supplierId: String,
-    val shopId: String,
-    val name: String,
-    val contact: String,
-    val description: String? = null,
-    val createdAt: Long = System.currentTimeMillis()
+    @get:PropertyName("supplierId") @set:PropertyName("supplierId")
+    var supplierId: String = "",
+    
+    @get:PropertyName("shopId") @set:PropertyName("shopId")
+    var shopId: String = "",
+    
+    @get:PropertyName("name") @set:PropertyName("name")
+    var name: String = "",
+    
+    @get:PropertyName("contact") @set:PropertyName("contact")
+    var contact: String = "",
+    
+    @get:PropertyName("description") @set:PropertyName("description")
+    var description: String? = null,
+    
+    @get:PropertyName("createdAt") @set:PropertyName("createdAt")
+    var createdAt: Long = System.currentTimeMillis()
 )

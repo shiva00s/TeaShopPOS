@@ -38,6 +38,16 @@
         </activity>
 
         <activity
+            android:name=".ui.LoginActivity"
+            android:exported="false"
+            android:label="Login" />
+
+        <activity
+            android:name=".ui.ShopDashboardActivity"
+            android:exported="false"
+            android:label="Shop Dashboard" />
+
+        <activity
             android:name=".ui.ShopMenuActivity"
             android:exported="false" />
 
@@ -48,6 +58,10 @@
 
         <activity
             android:name=".ui.StaffActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.StaffAttendanceActivity"
             android:exported="false" />
 
         <activity
@@ -65,6 +79,21 @@
         <activity
             android:name=".ui.ReportsActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.DetailedReportActivity"
+            android:exported="false"
+            android:label="Detailed Report" />
+
+        <activity
+            android:name=".ui.PosReportActivity"
+            android:exported="false"
+            android:label="POS Report" />
+
+        <activity
+            android:name=".ui.ShopClosedDaysActivity"
+            android:exported="false"
+            android:label="Shop Closed Days" />
 
     </application>
 

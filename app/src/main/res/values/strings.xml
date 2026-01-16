@@ -6,4 +6,14 @@
     <string name="out_time">OUT: %02d:%02d</string>
     <string name="attendance_log_label">%s to %s</string>
     <string name="attendance_log_value">%sh (%s)</string>
+    
+    <string name="search_items">Search items...</string>
+    <string name="order_label">Order 🧾</string>
+    <string name="total_label">Total</string>
+    <string name="default_total">₹ 0.00</string>
+    <string name="pay_button">PAY 💳</string>
+    <string name="hold_button">HOLD</string>
+    <string name="held_orders_button">H(0)</string>
+    <string name="clear_button">C</string>
+    <string name="standing_button">S</string>
 </resources>

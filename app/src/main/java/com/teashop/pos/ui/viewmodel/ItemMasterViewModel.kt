@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.teashop.pos.data.MainRepository
 import com.teashop.pos.data.entity.Item
 import com.teashop.pos.data.entity.ShopItemPrice
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.UUID
+import javax.inject.Inject
 
-class ItemMasterViewModel(private val repository: MainRepository) : ViewModel() {
+@HiltViewModel
+class ItemMasterViewModel @Inject constructor(private val repository: MainRepository) : ViewModel() {
 
     val allItems: StateFlow<List<Item>> = repository.getActiveItems()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -19,16 +22,55 @@ class ItemMasterViewModel(private val repository: MainRepository) : ViewModel() 
 
     fun loadItem(itemId: String) {
         viewModelScope.launch {
-            _selectedItem.value = repository.getItem(itemId)
+            _selectedItem.value = repository.getItem(itemId).firstOrNull()
         }
+    }
+
+    private fun getEmojiForCategory(category: String): String {
+        val cat = category.lowercase()
+        return when {
+            cat.contains("tea") -> "☕"
+            cat.contains("coffee") -> "☕"
+            cat.contains("milk drink") -> "🥛"
+            cat.contains("flavoured milk") -> "🌹"
+            cat.contains("juice") -> "🍹"
+            cat.contains("shake") -> "🥤"
+            cat.contains("cooler") -> "🧊"
+            cat.contains("ice cream") -> "🍨"
+            cat.contains("falooda") -> "🍧"
+            cat.contains("maggie") -> "🍜"
+            cat.contains("fries") -> "🍟"
+            cat.contains("bread") -> "🍞"
+            cat.contains("sandwich") -> "🥪"
+            cat.contains("chicken") -> "🍗"
+            cat.contains("burger") -> "🍔"
+            cat.contains("snack") -> "🍘"
+            cat.contains("health") -> "💪"
+            else -> "🍽️"
+        }
+    }
+
+    private fun formatNameWithEmoji(name: String, category: String): String {
+        val emoji = getEmojiForCategory(category)
+        // Only add emoji if name doesn't already contain a symbol/emoji
+        return if (name.any { Character.isSurrogate(it) || it.code > 127 }) name else "$emoji $name"
+    }
+
+    private fun formatCategoryWithEmoji(category: String): String {
+        val emoji = getEmojiForCategory(category)
+        // Only add emoji if category doesn't already contain a symbol/emoji
+        return if (category.any { Character.isSurrogate(it) || it.code > 127 }) category else "$category $emoji"
     }
 
     fun addItemWithParcel(name: String, category: String, hasParcel: Boolean, parcelAmt: Double) {
         viewModelScope.launch {
+            val finalCategory = formatCategoryWithEmoji(category)
+            val finalName = formatNameWithEmoji(name, finalCategory)
+            
             val item = Item(
                 itemId = UUID.randomUUID().toString(),
-                name = name,
-                category = category,
+                name = finalName,
+                category = finalCategory,
                 hasParcelCharge = hasParcel,
                 defaultParcelCharge = parcelAmt
             )
@@ -42,8 +84,8 @@ class ItemMasterViewModel(private val repository: MainRepository) : ViewModel() 
             val itemId = UUID.randomUUID().toString()
             val item = Item(
                 itemId = itemId,
-                name = name,
-                category = "Scanned",
+                name = "🔍 $name",
+                category = "Scanned 🔍",
                 isActive = true,
                 globalPrice = price
             )
@@ -62,9 +104,12 @@ class ItemMasterViewModel(private val repository: MainRepository) : ViewModel() 
 
     fun updateItem(item: Item, name: String, category: String, hasParcel: Boolean, parcelAmt: Double) {
         viewModelScope.launch {
+            val finalCategory = formatCategoryWithEmoji(category)
+            val finalName = formatNameWithEmoji(name, finalCategory)
+            
             val updatedItem = item.copy(
-                name = name,
-                category = category,
+                name = finalName,
+                category = finalCategory,
                 hasParcelCharge = hasParcel,
                 defaultParcelCharge = parcelAmt
             )

@@ -2,28 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_held_orders"
-        android:title="Held Orders"
-        android:icon="@drawable/ic_held_orders"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_theme"
-        android:title="Toggle Theme"
-        android:icon="@drawable/ic_brightness_auto"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_staff"
-        android:title="Staff Management" />
-    <item
         android:id="@+id/action_items"
-        android:title="Menu &amp; Pricing" />
-    <item
-        android:id="@+id/action_finance"
-        android:title="Cash &amp; Stock Entry" />
-    <item
-        android:id="@+id/action_reports"
-        android:title="Reports" />
-    <item
-        android:id="@+id/action_change_service"
-        android:title="Change Table" />
+        android:title="Menu &amp; Pricing"
+        app:showAsAction="never" />
 </menu>

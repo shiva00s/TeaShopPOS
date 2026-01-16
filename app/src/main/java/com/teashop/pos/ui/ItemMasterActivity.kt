@@ -1,33 +1,29 @@
 package com.teashop.pos.ui
 
-import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.teashop.pos.TeaShopApplication
+import androidx.recyclerview.widget.GridLayoutManager
 import com.teashop.pos.databinding.ActivityItemMasterBinding
 import com.teashop.pos.ui.adapter.ItemMasterAdapter
 import com.teashop.pos.ui.viewmodel.ItemMasterViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class ItemMasterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityItemMasterBinding
-    private lateinit var viewModel: ItemMasterViewModel
+    private val viewModel: ItemMasterViewModel by viewModels()
     private lateinit var adapter: ItemMasterAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityItemMasterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val app = application as TeaShopApplication
-        val factory = app.viewModelFactory
-        viewModel = ViewModelProvider(this, factory)[ItemMasterViewModel::class.java]
 
         setupUI()
         observeViewModel()
@@ -47,16 +43,12 @@ class ItemMasterActivity : AppCompatActivity() {
                 viewModel.deleteItem(item)
             }
         )
-        binding.rvItems.layoutManager = LinearLayoutManager(this)
+        // Updated to 2 columns as requested
+        binding.rvItems.layoutManager = GridLayoutManager(this, 2)
         binding.rvItems.adapter = adapter
 
         binding.fabAddItem.setOnClickListener { 
             AddItemDialogFragment.newInstance().show(supportFragmentManager, AddItemDialogFragment.TAG)
-        }
-
-        binding.fabScanMenu.setOnClickListener {
-            val shopId = intent.getStringExtra("SHOP_ID")
-            startActivity(Intent(this, ScanMenuActivity::class.java).putExtra("SHOP_ID", shopId))
         }
     }
 

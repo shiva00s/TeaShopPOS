@@ -3,23 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/window_background">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Global Item Master"
-            app:titleTextColor="@color/white" />
+            app:title="Global Item Master 🍵"
+            app:titleCentered="true"
+            app:titleTextAppearance="@style/PremiumToolbarTitle" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvItems"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="8dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/item_master_row" />
 
@@ -28,22 +34,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="bottom|end"
-        android:layout_margin="24.dp"
+        android:layout_margin="24dp"
         android:gravity="end">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabScanMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:fabSize="mini"
-            android:tooltipText="Scan Menu"
-            app:srcCompat="@android:drawable/ic_menu_camera" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fabAddItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="New Item 🍰"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/colorPrimary"
+            app:iconTint="@color/white"
             app:srcCompat="@android:drawable/ic_input_add" />
     </LinearLayout>
 

@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.teashop.pos.data.MainRepository
-import com.teashop.pos.data.dao.ShopMenuItem
+import com.teashop.pos.data.OrderWithItems
 import com.teashop.pos.data.entity.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,15 +16,29 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.UUID
+import javax.inject.Inject
 
-class POSViewModel(private val repository: MainRepository) : ViewModel() {
+data class CartItem(
+    val item: Item,
+    val price: Double,
+    val quantity: Double,
+    val parcelCharge: Double = 0.0
+)
+
+@HiltViewModel
+class POSViewModel @Inject constructor(private val repository: MainRepository) : ViewModel() {
 
     private val _currentShopId = MutableStateFlow<String?>(null)
     val currentShopId: StateFlow<String?> = _currentShopId.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val heldOrders: LiveData<List<Order>> = _currentShopId.flatMapLatest { shopId ->
-        repository.getHeldOrders(shopId!!)
+        repository.getHeldOrders(shopId ?: "")
+    }.asLiveData()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val heldOrdersWithItems: LiveData<List<OrderWithItems>> = _currentShopId.flatMapLatest { shopId ->
+        repository.getHeldOrdersWithItems(shopId ?: "")
     }.asLiveData()
 
     private val _menuItems = MutableStateFlow<List<ShopMenuItem>>(emptyList())
@@ -51,7 +66,6 @@ class POSViewModel(private val repository: MainRepository) : ViewModel() {
     }
 
     fun setServiceType(type: String, table: String? = null) {
-        // Set table ID first to ensure UI observers have the correct table when service type updates
         _tableId.value = table
         _serviceType.value = type
         
@@ -150,20 +164,31 @@ class POSViewModel(private val repository: MainRepository) : ViewModel() {
         }
     }
 
+    fun deleteHeldOrder(order: Order) {
+        viewModelScope.launch {
+            repository.deleteOrder(order)
+        }
+    }
+
+    fun clearAllHeldOrders() {
+        viewModelScope.launch {
+            heldOrdersWithItems.value?.forEach { orderWithItems ->
+                repository.deleteOrder(orderWithItems.order)
+            }
+        }
+    }
+
     fun loadHeldOrder(order: Order) {
         viewModelScope.launch {
-            val orderWithItems = repository.getOrderWithItems(order.orderId)
-            val cartItems = orderWithItems?.items?.map { 
-                val shopMenuItem = _menuItems.value.find { menuItem -> menuItem.item.itemId == it.itemId }
-                CartItem(shopMenuItem!!.item, it.unitPrice, it.quantity, it.parcelCharge)
-            } ?: emptyList()
-            _cart.value = cartItems
-            // Ensure service type and table ID are restored when loading a held order
-            // Set table ID first
-            _tableId.value = order.tableId
-            _serviceType.value = order.serviceType
-            
-            repository.deleteOrder(order)
+            repository.getOrderWithItems(order.orderId).collect { orderWithItems ->
+                val cartItems = orderWithItems.items.mapNotNull { item ->
+                    val shopMenuItem = _menuItems.value.find { menuItem -> menuItem.item.itemId == item.itemId }
+                    shopMenuItem?.let { CartItem(it.item, item.unitPrice, item.quantity, item.parcelCharge) }
+                }
+                _cart.value = cartItems
+                _tableId.value = order.tableId
+                _serviceType.value = order.serviceType
+            }
         }
     }
 
@@ -175,6 +200,15 @@ class POSViewModel(private val repository: MainRepository) : ViewModel() {
         viewModelScope.launch {
             val orderId = UUID.randomUUID().toString()
             val totalAmount = cartItems.sumOf { (it.price * it.quantity) + it.parcelCharge }
+            val cashAmt = payments["CASH"] ?: 0.0
+            val qrAmt = payments["QR"] ?: 0.0
+            
+            val method = when {
+                cashAmt > 0 && qrAmt > 0 -> "SPLIT"
+                cashAmt > 0 -> "CASH"
+                qrAmt > 0 -> "ONLINE"
+                else -> "CASH"
+            }
             
             val order = Order(
                 orderId = orderId,
@@ -184,7 +218,9 @@ class POSViewModel(private val repository: MainRepository) : ViewModel() {
                 totalAmount = totalAmount,
                 payableAmount = totalAmount,
                 paymentStatus = "PAID",
-                paymentMethod = "SPLIT",
+                paymentMethod = method,
+                cashAmount = cashAmt,
+                onlineAmount = qrAmt,
                 status = "CLOSED",
                 closedAt = System.currentTimeMillis()
             )
@@ -204,8 +240,6 @@ class POSViewModel(private val repository: MainRepository) : ViewModel() {
                 ))
             }
 
-            // Removed Cashbook and StockMovement entries to decouple POS from Finance/Stock
-            
             _cart.value = emptyList()
             _transactionComplete.value = true
         }
@@ -215,10 +249,3 @@ class POSViewModel(private val repository: MainRepository) : ViewModel() {
         _transactionComplete.value = false
     }
 }
-
-data class CartItem(
-    val item: Item,
-    val price: Double,
-    val quantity: Double,
-    val parcelCharge: Double = 0.0
-)

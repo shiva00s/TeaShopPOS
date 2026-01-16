@@ -10,27 +10,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import com.teashop.pos.TeaShopApplication
 import com.teashop.pos.databinding.ActivityScanMenuBinding
 import com.teashop.pos.databinding.ItemDetectedMenuBinding
 import com.teashop.pos.ui.viewmodel.ItemMasterViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 
+@AndroidEntryPoint
 class ScanMenuActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityScanMenuBinding
-    private lateinit var viewModel: ItemMasterViewModel
+    private val viewModel: ItemMasterViewModel by viewModels()
     private var imageUri: Uri? = null
     private var shopId: String? = null
     private val detectedItemsAdapter = DetectedItemsAdapter()
@@ -54,10 +55,6 @@ class ScanMenuActivity : AppCompatActivity() {
         binding = ActivityScanMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val app = application as TeaShopApplication
-        val factory = app.viewModelFactory
-        viewModel = ViewModelProvider(this, factory)[ItemMasterViewModel::class.java]
-        
         shopId = intent.getStringExtra("SHOP_ID")
 
         setupUI()
@@ -66,11 +63,13 @@ class ScanMenuActivity : AppCompatActivity() {
     private fun setupUI() {
         binding.btnCamera.setOnClickListener {
             val photoFile = File(cacheDir, "scan_menu_temp.jpg")
-            imageUri = FileProvider.getUriForFile(
+            val uri = FileProvider.getUriForFile(
                 this,
                 "${applicationContext.packageName}.fileprovider",
                 photoFile
             )
+            imageUri = uri
+            takePicture.launch(uri)
         }
 
         binding.btnGallery.setOnClickListener {
@@ -117,33 +116,34 @@ class ScanMenuActivity : AppCompatActivity() {
 
     private fun parseDetectedText(text: String) {
         val candidates = mutableListOf<DetectedItem>()
-        // Improved Regex: Matches name followed by price (currency symbol optional)
-        // Matches line ending with digits, possibly with decimals. 
-        // Example: "Ginger Tea 20.00", "Masala Tea ₹ 15"
         val lines = text.split("\n")
-        val regex = Regex("^(.*?)[^0-9\\.]*([0-9]+(?:\\.[0-9]{2})?)$")
-
+        
+        // Smarter parsing for multi-column menus like the one in the image
+        // Improved Regex: Handles names with spaces, symbols and then price
+        val regexLine = Regex("^(.*?)\\s*[^0-9\\.]*([0-9]+(?:\\.[0-9]{2})?)$")
+        
         for (line in lines) {
             val trimmed = line.trim()
             if (trimmed.isEmpty()) continue
             
-            val match = regex.find(trimmed)
+            val match = regexLine.find(trimmed)
             if (match != null && match.groupValues.size >= 3) {
                 var name = match.groupValues[1].trim()
-                // Cleanup name symbols
+                // Cleanup: Remove common menu junk but keep alphanumeric
                 name = name.replace(Regex("[^a-zA-Z0-9 &()-]"), " ").trim()
                 
                 val priceStr = match.groupValues[2]
                 val price = priceStr.toDoubleOrNull() ?: 0.0
                 
-                if (name.isNotEmpty() && price > 0) {
+                // Only add if it looks like a real item (name > 2 chars, price > 0)
+                if (name.length > 2 && price > 0) {
                     candidates.add(DetectedItem(name, price))
                 }
             }
         }
         
         if (candidates.isEmpty()) {
-            Toast.makeText(this, "No items detected with prices", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Try taking a clearer picture of the menu", Toast.LENGTH_LONG).show()
         }
         detectedItemsAdapter.submitList(candidates)
     }
@@ -187,7 +187,6 @@ class DetectedItemsAdapter : RecyclerView.Adapter<DetectedItemsAdapter.ViewHolde
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         
-        // Remove listeners before setting values to avoid loops
         holder.binding.cbSelect.setOnCheckedChangeListener(null)
         holder.binding.etName.removeTextChangedListener(holder.binding.etName.tag as? TextWatcher)
         holder.binding.etPrice.removeTextChangedListener(holder.binding.etPrice.tag as? TextWatcher)

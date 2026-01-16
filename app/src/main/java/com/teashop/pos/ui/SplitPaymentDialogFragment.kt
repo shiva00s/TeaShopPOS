@@ -5,22 +5,24 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import com.teashop.pos.R
-import com.teashop.pos.TeaShopApplication
 import com.teashop.pos.databinding.DialogSplitPaymentBinding
 import com.teashop.pos.ui.viewmodel.POSViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SplitPaymentDialogFragment : DialogFragment() {
 
     private var _binding: DialogSplitPaymentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: POSViewModel
+    private val viewModel: POSViewModel by activityViewModels()
 
     companion object {
         const val TAG = "SplitPaymentDialog"
@@ -38,13 +40,6 @@ class SplitPaymentDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val app = requireActivity().application as TeaShopApplication
-        val factory = app.viewModelFactory
-        viewModel = ViewModelProvider(requireActivity(), factory)[POSViewModel::class.java]
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogSplitPaymentBinding.inflate(LayoutInflater.from(context))
         val serviceType = requireArguments().getString(ARG_SERVICE_TYPE, "STANDING")
@@ -60,6 +55,10 @@ class SplitPaymentDialogFragment : DialogFragment() {
         val neutralColor = remainingTextView.currentTextColor
         val errorColor = ContextCompat.getColor(requireContext(), R.color.red)
         val successColor = ContextCompat.getColor(requireContext(), R.color.green)
+
+        // Prefill both with total amount as requested
+        cashEditText.setText("%.2f".format(totalDue))
+        qrEditText.setText("%.2f".format(totalDue))
 
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -83,13 +82,27 @@ class SplitPaymentDialogFragment : DialogFragment() {
         cashEditText.addTextChangedListener(textWatcher)
         qrEditText.addTextChangedListener(textWatcher)
 
-        cashEditText.setText("")
-        qrEditText.setText("")
+        binding.btnPayCash.setOnClickListener {
+            viewModel.checkoutSplit(mapOf("CASH" to totalDue, "QR" to 0.0), serviceType, tableId)
+            dismiss()
+        }
+
+        binding.btnPayQR.setOnClickListener {
+            viewModel.checkoutSplit(mapOf("CASH" to 0.0, "QR" to totalDue), serviceType, tableId)
+            dismiss()
+        }
+
+        binding.btnSplit.setOnClickListener {
+            cashEditText.setText("")
+            qrEditText.setText("")
+            cashEditText.requestFocus()
+            Toast.makeText(context, "Enter split amounts manually", Toast.LENGTH_SHORT).show()
+        }
 
         val dialog = AlertDialog.Builder(requireActivity())
             .setTitle("Payment Checkout")
             .setView(binding.root)
-            .setPositiveButton("Complete Order", null) 
+            .setPositiveButton("PAY", null) 
             .setNegativeButton("Cancel", null)
             .create()
 
