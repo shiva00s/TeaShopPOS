@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.teashop.pos.R
 import com.teashop.pos.data.entity.Attendance
+import com.teashop.pos.data.entity.ShopClosedDay
 import com.teashop.pos.databinding.DialogAttendanceLogsBinding
 import com.teashop.pos.databinding.ItemFinanceRowBinding
 import com.teashop.pos.databinding.ItemMonthCardBinding
@@ -168,7 +169,7 @@ class AttendanceLogsDialogFragment : DialogFragment() {
             combine(
                 viewModel.getAttendanceRecords(employeeId, start.timeInMillis, end.timeInMillis),
                 viewModel.getClosedDays(shopId, start.timeInMillis, end.timeInMillis)
-            ) { records, closedDays ->
+            ) { records: List<Attendance>, closedDays: List<ShopClosedDay> ->
                 records to closedDays
             }.collect { (records, closedDays) ->
                 if (currentView != "DAYS") return@collect
@@ -178,7 +179,7 @@ class AttendanceLogsDialogFragment : DialogFragment() {
                 val groupedRecords = records.groupBy { 
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(it.checkInTime))
                 }
-                val groupedClosed = closedDays.associateBy {
+                val groupedClosed: Map<String, ShopClosedDay> = closedDays.associateBy {
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(it.date))
                 }
 
@@ -290,7 +291,7 @@ class AttendanceLogsDialogFragment : DialogFragment() {
                             }
                         }
                         
-                        itemBinding.root.setOnClickListener {
+                        itemBinding.root..setOnClickListener {
                             if (summary.status == "WORK") {
                                 showDayDetailsDialog(summary)
                             }

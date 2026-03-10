@@ -122,10 +122,10 @@ class StaffViewModel @Inject constructor(
                 recordsInWindow.forEach { att ->
                     val attendanceDate = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date(att.checkInTime))
                     @Suppress("DEPRECATION")
-                    val attendanceType = att.attendanceType 
+                    val attendanceType = att.type
 
                     when (attendanceType) {
-                        AttendanceType.WORK -> {
+                        "WORK"-> {
                             daysWorkedSet.add(attendanceDate)
                             val checkOutTime = att.checkOutTime
                             val duration = when {
@@ -140,7 +140,7 @@ class StaffViewModel @Inject constructor(
                                 todayHours += duration
                             }
                         }
-                        AttendanceType.SHOP_CLOSED_PAID -> {
+                        "SHOP_CLOSED_PAID" -> {
                             daysWorkedSet.add(attendanceDate)
                             val shiftHours = dailyShiftHours
                             totalHoursMonth += shiftHours
@@ -148,7 +148,7 @@ class StaffViewModel @Inject constructor(
                                 todayHours += shiftHours
                             }
                         }
-                        AttendanceType.SHOP_CLOSED_UNPAID, AttendanceType.GAP -> {
+                        else -> {
                             // Do nothing for unpaid leave or gaps
                         }
                     }
@@ -159,7 +159,7 @@ class StaffViewModel @Inject constructor(
 
                 val todayWorkedOrPaidLeave = recordsInWindow.any {
                     @Suppress("DEPRECATION")
-                    it.checkInTime >= todayStart && (it.attendanceType == AttendanceType.WORK || it.attendanceType == AttendanceType.SHOP_CLOSED_PAID)
+                    it.checkInTime >= todayStart && (it.type == "WORK" || it.type == "SHOP_CLOSED_PAID")
                 }
                 if (todayWorkedOrPaidLeave) {
                     todayHours -= employee.breakHours
@@ -245,7 +245,7 @@ class StaffViewModel @Inject constructor(
         viewModelScope.launch {
             _employees.value.forEach { employee ->
                 if (employee.isActive) {
-                    val attendanceType = if (isPaid) AttendanceType.SHOP_CLOSED_PAID else AttendanceType.SHOP_CLOSED_UNPAID
+                    val attendanceType = if (isPaid) "SHOP_CLOSED_PAID" else "SHOP_CLOSED_UNPAID"
                     val calendar = Calendar.getInstance().apply {
                         time = date
                         set(Calendar.HOUR_OF_DAY, 0)
@@ -261,8 +261,7 @@ class StaffViewModel @Inject constructor(
                         shopId = sId,
                         checkInTime = checkInTime,
                         checkOutTime = null,
-                        attendanceType = attendanceType,
-                        type = attendanceType.name,
+                        type = attendanceType,
                         shiftStart = employee.shiftStart,
                         shiftEnd = employee.shiftEnd,
                         breakHours = employee.breakHours,
@@ -272,7 +271,7 @@ class StaffViewModel @Inject constructor(
                     repository.insertAttendance(attendance)
                 }
             }
-            recalculateShopProfit(sId) // Recalculate profit after adding attendance
+           // recalculateShopProfit(sId) // Recalculate profit after adding attendance
         }
     }
 
@@ -365,7 +364,7 @@ class StaffViewModel @Inject constructor(
 
             val records = repository.getAttendanceFlow(employee.employeeId, todayStart, todayStart + 86400000).first()
             @Suppress("DEPRECATION")
-            val lastRecord = records.filter { it.attendanceType == AttendanceType.WORK }.maxByOrNull { it.checkInTime }
+            val lastRecord = records.filter { it.type == "WORK" }.maxByOrNull { it.checkInTime }
 
             if (lastRecord != null && lastRecord.checkOutTime == null) {
                 val updatedRecord = lastRecord.copy(checkOutTime = date.time)
@@ -376,7 +375,6 @@ class StaffViewModel @Inject constructor(
                     employeeId = employee.employeeId,
                     shopId = employee.shopId,
                     checkInTime = date.time,
-                    attendanceType = AttendanceType.WORK,
                     type = "WORK",
                     shiftStart = employee.shiftStart,
                     shiftEnd = employee.shiftEnd,
@@ -385,7 +383,7 @@ class StaffViewModel @Inject constructor(
                     salaryRate = employee.salaryRate
                 ))
             }
-            recalculateShopProfit(employee.shopId)
+           // recalculateShopProfit(employee.shopId)
         }
     }
 
@@ -394,15 +392,14 @@ class StaffViewModel @Inject constructor(
         if (inTime < employee.hireDate || (employee.terminateDate != null && inTime > employee.terminateDate!!)) return
 
         viewModelScope.launch {
-            val attendanceType = if (isGap) AttendanceType.GAP else AttendanceType.WORK
+            val attendanceType = if (isGap) "GAP" else "WORK"
             repository.insertAttendance(Attendance(
                 attendanceId = UUID.randomUUID().toString(),
                 employeeId = employee.employeeId,
                 shopId = sId,
                 checkInTime = inTime,
                 checkOutTime = if (outTime > 0) outTime else null,
-                attendanceType = attendanceType,
-                type = attendanceType.name,
+                type = attendanceType,
                 shiftStart = employee.shiftStart,
                 shiftEnd = employee.shiftEnd,
                 breakHours = employee.breakHours,
@@ -416,7 +413,7 @@ class StaffViewModel @Inject constructor(
     fun updateAttendance(attendance: Attendance) {
         viewModelScope.launch {
             @Suppress("DEPRECATION")
-            repository.updateAttendance(attendance.copy(type = attendance.attendanceType.name))
+            repository.updateAttendance(attendance.copy(type = attendance.type))
             recalculateShopProfit(attendance.shopId)
         }
     }
@@ -474,7 +471,7 @@ class StaffViewModel @Inject constructor(
 
                 records.forEach { att ->
                     @Suppress("DEPRECATION")
-                    if (att.attendanceType == AttendanceType.WORK) {
+                    if (att.type == "WORK") {
                         daysWorkedSet.add(SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date(att.checkInTime)))
                         val duration = (att.checkOutTime ?: payEnd) - att.checkInTime
                         totalHours += duration / 3600000.0
@@ -488,8 +485,8 @@ class StaffViewModel @Inject constructor(
                 val (totalPay, _) = calculateSalaryFromHours(employee, totalHours, 0.0, dailyShiftHours)
 
                 Pair(totalPay, pendingAdvance)
-            }.first().let { (totalPay, pendingAdvance) ->
-                val netPayable = totalPay - pendingAdvance
+            }.first().let { (totalPay, pending) ->
+                val netPayable = totalPay - pending
                 val paymentId = UUID.randomUUID().toString()
                 repository.insertSalaryPayment(SalaryPayment(paymentId, employee.employeeId, sId, totalPay, 0.0, netPayable, payStart, payEnd))
                 repository.insertCashbookEntry(Cashbook(UUID.randomUUID().toString(), sId, "OUT", "SALARY", netPayable, "Salary: ${employee.name}", paymentId))

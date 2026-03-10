@@ -297,8 +297,8 @@ class MainRepository(
             if (closed.paySalary) {
                 employees.forEach { emp ->
                     val dateKey = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date(closed.date))
-                    val hasWorked = getAttendanceFlow(emp.employeeId, closed.date, closed.date + 86400000).firstOrNull()
-                        ?.any { SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date(it.checkInTime)) == dateKey && it.type == "WORK" } ?: false
+                    val hasWorked = getAttendanceFlow(emp.employeeId, closed.date, closed.date + 86400000).first()
+                        .any { SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date(it..checkInTime)) == dateKey && it.type == "WORK" }
 
                     if (!hasWorked) {
                         val dailyChunk = if (emp.salaryType == "MONTHLY_FIXED") emp.salaryRate / 30.0 else (emp.salaryRate * 8.0)
@@ -308,7 +308,7 @@ class MainRepository(
             }
         }
 
-        val pendingAdvance = employees.sumOf { getPendingAdvance(it.employeeId).firstOrNull() ?: 0.0 }
+        val pendingAdvance = employees.sumOf { getPendingAdvance(it.employeeId).first() }
         return totalSalarySum - pendingAdvance
     }
 
@@ -349,12 +349,14 @@ class MainRepository(
     }
 
     fun getCashFlowSummary(shopId: String?, start: Long, end: Long, salary: Double = 0.0): Flow<CashFlowSummary?> {
-        return getCashbookEntriesForPeriod(shopId, start, end).map { entries ->
+        return getCashbookEntriesForPeriod(shopId, start, end).flatMapLatest { entries ->
             val totalIn = entries.filter { it.transactionType == "IN" }.sumOf { it.amount }
             val totalOut = entries.filter { it.transactionType == "OUT" }.sumOf { it.amount }
-            val expenses = if (shopId != null) getFixedExpensesForShop(shopId).first() else getAllFixedExpenses().first()
-            val fixedExpenses = calculateProratedExpenses(expenses, start, end)
-            CashFlowSummary(totalIn, totalOut, salary, fixedExpenses)
+            val expensesFlow = if (shopId != null) getFixedExpensesForShop(shopId) else getAllFixedExpenses()
+            expensesFlow.map { expenses ->
+                val fixedExpenses = calculateProratedExpenses(expenses, start, end)
+                CashFlowSummary(totalIn, totalOut, salary, fixedExpenses)
+            }
         }
     }
 
